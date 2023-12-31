@@ -29,6 +29,7 @@ def transcribe_wav(file_path: str, model_name: str) -> str:
 
     while True:
         data = wf.readframes(4000)
+        
         if len(data) == 0:
             break
         if rec.AcceptWaveform(data):
@@ -37,7 +38,6 @@ def transcribe_wav(file_path: str, model_name: str) -> str:
 
     # Add final part
     final_result = json.loads(rec.FinalResult())
-    logger.info(final_result)
 
     transcript_parts.append(final_result.get("text", ""))
 

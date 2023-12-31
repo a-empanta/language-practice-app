@@ -47,7 +47,7 @@ async def transcribe(file: UploadFile = File(...), model_name: str = Form(...) ,
         converted_path = original_path + "_converted.wav"
         convert_to_wav(original_path, converted_path)
         transcript = transcribe_wav(converted_path, model_name).replace('<unk>', '')
-        
+
         return {"transcript": transcript}
 
     except Exception as e:

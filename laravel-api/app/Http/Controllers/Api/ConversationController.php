@@ -38,7 +38,7 @@ class ConversationController extends Controller
         $parsed           = $this->formatAiResponse($response, $nativeLanguage);
         $replyDutch       = $parsed['response'];
         $replyTranslation = isset($parsed['translation']) ? $parsed['translation'] : null;
-        $replyDutchAudioDataUri  = $this->synthesizeSpeech($replyDutch);
+        $replyAudioUri  = $this->synthesizeSpeech($replyDutch);
 
         $this->saveConversation($data['prompt'], $replyDutch, $id);
 
@@ -46,7 +46,7 @@ class ConversationController extends Controller
             'message'     => 'Data received successfully!',
             'response'    => $replyDutch,
             'translation' => $replyTranslation,
-            'replyDutchAudioDataUri' => $replyDutchAudioDataUri,
+            'replyAudioUri' => $replyAudioUri,
         ]);
     }
 
@@ -64,7 +64,7 @@ class ConversationController extends Controller
     {        
         $data = $request->validate([
             'practiseLanguageId' => 'required|integer|exists:languages,id',
-            'nativeLanguageId' => 'required|integer|exists:languages,id',
+            'translatingLanguageId' => 'required|integer|exists:languages,id',
             'categoryId' => 'required|integer|exists:topic_categories,id',
             'topicId' => 'required|integer|exists:topics,id',
             'level' => 'required|string|max:255',
@@ -74,7 +74,7 @@ class ConversationController extends Controller
             [
                 'topic_id' => $request['topicId'],
                 'level'    => $request['level'],
-                'native_language_id'  => $request['nativeLanguageId'],
+                'native_language_id'  => $request['translatingLanguageId'],
                 'practising_language_id' => $request['practiseLanguageId'],
             ]
         );
@@ -105,7 +105,7 @@ class ConversationController extends Controller
         $inaproppriate = $practisingLanguageRecord->phrases['inappropriate'];
         $mistake = $practisingLanguageRecord->phrases['mistake'];
         $misunderstanding = $practisingLanguageRecord->phrases['missunderstanding'];
-        $topicChange = $practisingLanguage->phrases['topic_change'];
+        $topicChange = $practisingLanguageRecord->phrases['topic_change'];
 
         $system = <<<EOT
                         You are a friendly {$practisingLanguage}-language tutor bot.

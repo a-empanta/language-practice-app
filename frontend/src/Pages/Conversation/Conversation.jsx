@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { Mic, MicOff, Globe, Subtitles, Headphones } from "lucide-react";
+import { Mic, MicOff, Globe, Subtitles, Headphones, LoaderCircle } from "lucide-react";
 import axios from "axios";
 import { AppContext } from "../../Context/AppContext";
 import { useNavigate, useParams } from "react-router-dom";
@@ -24,9 +24,9 @@ const Conversation = () => {
   const { startRecording, stopRecording, } = useReactMediaRecorder({audio: true, onStop: (blobUrl) => sendBlob(blobUrl) });
 
   // State
-  const [lang, setLang] = useState("nl-NL");
   const [userTranscript, setUserTranscript] = useState('')
   const [respondingText, setRespondingText] = useState('');
+  const [replyAudioUri, setReplyAudioUri] = useState('');
   const [conversation, setConversation] = useState(null);
   const [error, setError] = useState(null);
   const [showSubtitles, setShowSubtitles] = useState(true);
@@ -93,15 +93,16 @@ const Conversation = () => {
       );
 
       // pull out the fields your API returns
-      const { message, response, translation, replyDutchAudioDataUri } = data;
+      const { message, response, translation, replyAudioUri } = data;
   
       // show the text on screen
       setRespondingText(response);
       // setTranslation(translation);
-  
+      
       // fire up an <audio> player
-      if (replyDutchAudioDataUri) {
-        const audio = new Audio(replyDutchAudioDataUri);
+      if (replyAudioUri) {
+        setReplyAudioUri(replyAudioUri);
+        const audio = new Audio(replyAudioUri);
         audio.play().catch(err => {
           console.error('audio play failed', err);
         });
@@ -116,47 +117,11 @@ const Conversation = () => {
   };
 
   const handleListenAiResponse = () => {
-    const text = respondingText?.trim();
-    if (!text) return;
-  
-    // 1) grab a fresh list of voices
-    const voices = window.speechSynthesis.getVoices();
-    if (voices.length === 0) {
-      console.warn("No TTS voices yet—waiting for voiceschanged");
-      // defer until voices arrive
-      window.speechSynthesis.onvoiceschanged = () => {
-        window.speechSynthesis.onvoiceschanged = null;
-        handleListenAiResponse();
-      };
-      return;
-    }
-  
-    // 2) pick best match, or fallback
-    let selected =
-      voices.find(v => v.lang === lang) ||
-      voices.find(v => v.lang.startsWith(lang.split("-")[0])) ||
-      voices[0];
-  
-    console.log(`TTS: using voice ${selected.name} (${selected.lang})`);
-  
-    // 3) build utterance
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.voice  = selected;
-    utter.lang   = selected.lang;
-    utter.rate   = 1;
-    utter.pitch  = 1;
-    utter.volume = 1;
-  
-    utter.onstart = () => console.log("🗣 TTS started");
-    utter.onerror = e => {
-      console.error("🗣 TTS error", e);
-    }
-    utter.onend   = () => console.log("🗣 TTS finished");
-  
-    // 4) clear any previous, then speak after a tiny delay
-    window.speechSynthesis.cancel();
-    setTimeout(() => window.speechSynthesis.speak(utter), 100);
-  };  
+    const audio = new Audio(replyAudioUri);
+    audio.play().catch(err => {
+          console.error('audio play failed', err);
+        });
+  }
   
   const handleMic = async () => {
     if (!micListening.current) {
@@ -228,8 +193,7 @@ const Conversation = () => {
                       <Mic className="w-7 h-7" /> Start Speaking
                     </>
                   )}
-                </Button>
-
+                </Button>                
                 { loadingResponse === false ? 
                   (<div>
                       <Button
@@ -242,7 +206,13 @@ const Conversation = () => {
                       </Button>
                     </div>) 
                     : loadingResponse === true ? 
-                    (<p>loading</p>) 
+                    (<Button
+                      className={cn(
+                        "bg-gradient-to-tr from-purple-400 to-purple-700 animate-pulse hover:from-purple-500 hover:to-purple-900 transition text-white font-bold rounded-full px-5 py-5 shadow-lg flex items-center gap-2 text-lg tracking-wide",
+                      )}>
+                      <LoaderCircle className="h-8 w-8 animate-spin" strokeWidth={3}/>
+                      Waiting reply...
+                    </Button>)
                     : ''
                 }
               </div>

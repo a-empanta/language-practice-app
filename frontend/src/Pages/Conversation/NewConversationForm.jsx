@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../Context/AppContext";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
+import { LoaderCircle } from "lucide-react";
 
 export default function NewConversationForm() {
     const { token, laravelBaseUrl, setLoading } = useContext(AppContext);
@@ -16,7 +17,7 @@ export default function NewConversationForm() {
     const [level, setLevel] = useState("Beginner (A1)");
     const [availableLanguages, setAvailableLanguages] = useState({});
     const [practiseLanguageId, setPractiseLanguageId] = useState(0);
-    const [nativeLanguageId, setNativeLanguageId] = useState(0);
+    const [translatingLanguageId, setTranslatingLanguageId] = useState(0);
     const [formError, setFormError] = useState('');
 
     const levels = [
@@ -75,7 +76,7 @@ export default function NewConversationForm() {
         } finally {
             let firstLanguage = Object.values(languages)[0];
             setPractiseLanguageId(firstLanguage);
-            setNativeLanguageId(firstLanguage);
+            setTranslatingLanguageId(firstLanguage);
             setAvailableLanguages(languages);
         }
     }
@@ -98,7 +99,7 @@ export default function NewConversationForm() {
             const response = await axios.post(`${laravelBaseUrl}/api/new-conversation`,
                                                     {
                                                         practiseLanguageId: practiseLanguageId,
-                                                        nativeLanguageId: nativeLanguageId,
+                                                        translatingLanguageId: translatingLanguageId,
                                                         categoryId: selectedTopicCategoryId,
                                                         topicId: selectedTopicId,
                                                         level: level
@@ -141,7 +142,10 @@ export default function NewConversationForm() {
                             Language to Practise
                         </label>
                         {(!availableLanguages || Object.keys(availableLanguages).length === 0) ? (
-                            <div className="h-12 bg-purple-200 rounded-xl animate-pulse"></div>
+                            <div className="h-12 bg-purple-200 rounded-xl animate-pulse flex items-center gap-2 pl-3">
+                                <LoaderCircle className="h-6 w-6 animate-spin" />
+                                Loading...
+                            </div>
                         ) : (
                             <select
                                 className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
@@ -157,18 +161,21 @@ export default function NewConversationForm() {
                         )}
                     </div>
 
-                    {/* Native Language */}
+                    {/* Translating Language */}
                     <div className="flex flex-col">
                         <label className="mb-2 text-sm font-semibold text-gray-700">
-                            Native Language
+                            Translating Language
                         </label>
                         {(!availableLanguages || Object.keys(availableLanguages).length === 0) ? (
-                            <div className="h-12 bg-purple-200 rounded-xl animate-pulse"></div>
+                            <div className="h-12 bg-purple-200 rounded-xl animate-pulse flex items-center gap-2 pl-3">
+                                <LoaderCircle className="h-6 w-6 animate-spin" />
+                                Loading...
+                            </div>
                         ) : (
                             <select
                                 className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                value={nativeLanguageId}
-                                onChange={(event) => setNativeLanguageId(event.target.value)}
+                                value={translatingLanguageId}
+                                onChange={(event) => setTranslatingLanguageId(event.target.value)}
                             >
                                 {Object.entries(availableLanguages).map(([name, id]) => (
                                     <option key={id} value={id}>
@@ -185,7 +192,10 @@ export default function NewConversationForm() {
                             Category
                         </label>
                         {loadingTopicCategories ? (
-                            <div className="h-12 bg-purple-200 rounded-xl animate-pulse"></div>
+                            <div className="h-12 bg-purple-200 rounded-xl animate-pulse flex items-center gap-2 pl-3">
+                                <LoaderCircle className="h-6 w-6 animate-spin" />
+                                Loading...
+                            </div>
                         ) : (
                             <select
                                 className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
@@ -207,7 +217,10 @@ export default function NewConversationForm() {
                             Topic
                         </label>
                         {loadingTopicCategories ? (
-                            <div className="h-12 bg-purple-200 rounded-xl animate-pulse"></div>
+                            <div className="h-12 bg-purple-200 rounded-xl animate-pulse flex items-center gap-2 pl-3">
+                                <LoaderCircle className="h-6 w-6 animate-spin" />
+                                Loading...
+                            </div>
                         ) : (
                             <select
                                 className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"

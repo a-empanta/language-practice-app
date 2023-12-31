@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import './Conversation.css';
 import { Button } from "@/components/ui/button";
-import { Mic, ArrowRight, ChevronsDown } from "lucide-react";
+import { Mic, ArrowRight, ChevronsDown, LoaderCircle } from "lucide-react";
 import { AppContext } from '../../Context/AppContext';
 
 export default function EnterConversation() {
@@ -60,7 +60,8 @@ export default function EnterConversation() {
       <div className="w-full max-w-md flex flex-col gap-4">
         {! latestConversationFetced ? 
             (
-              <div className="h-10 bg-purple-400 rounded-full animate-pulse flex items-center justify-center text-white font-medium">
+              <div className="h-10 bg-purple-400 rounded-full animate-pulse flex items-center gap-2 justify-center text-white font-medium">
+                <LoaderCircle className="h-5 w-5 animate-spin" />
                 Loading previous conversation...
               </div>
             ) : 
