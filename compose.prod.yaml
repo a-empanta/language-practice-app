@@ -90,7 +90,7 @@ services:
     # This prevents dependent services from starting before the database is ready.
     # -----------------------------------------------------------
     healthcheck:
-      test: ["CMD", "mysqladmin", "-u$MYSQL_USER", "-p$DB_PASSWORD", "ping", "-h", "${DB_HOST}"]
+      test: ["CMD", "mysqladmin", "-u$MYSQL_USER", "-p$DB_PASSWORD", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
