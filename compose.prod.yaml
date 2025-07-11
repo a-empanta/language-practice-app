@@ -69,13 +69,12 @@ services:
       - production-network
 
   mysql:
-    image: mysql:9.3.0
-    restart: unless-stopped
+    image: mysql:8.0-debian
+    restart: unless-stopped    
     user: mysql
     ports:
       - "${DB_PORT}:3306"
     environment:
-      - MYSQL_ROOT_HOST=%
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=${DB_DATABASE}    # optional
       - MYSQL_USER=${DB_USERNAME}
