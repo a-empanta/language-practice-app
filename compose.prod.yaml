@@ -76,6 +76,9 @@ services:
       - "${DB_PORT}:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}    # optional
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
     volumes:
        - mysql-data-production:/var/lib/mysql
     networks:
@@ -87,7 +90,7 @@ services:
     # This prevents dependent services from starting before the database is ready.
     # -----------------------------------------------------------
     healthcheck:
-      test: ["CMD", "mysqladmin", "-u$MYSQL_USER", "-p$MYSQL_PASSWORD",  "ping", "-h", "${DB_HOST}"]
+      test: ["CMD", "mysqladmin", "-u$MYSQL_USER", "-p$DB_PASSWORD", "ping", "-h", "${DB_HOST}"]
       interval: 10s
       timeout: 5s
       retries: 5
