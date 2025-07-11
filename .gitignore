@@ -1,0 +1,6 @@
+/dockerfiles
+compose-creation.yml
+Makefile
+README.md
+*.env
+connect_ec2.sh
