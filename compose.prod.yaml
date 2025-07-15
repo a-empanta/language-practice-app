@@ -77,7 +77,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=${DB_DATABASE}    # optional
-      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_ALLOW_EMPTY_PASSWORD
       - MYSQL_PASSWORD=${DB_PASSWORD}
     volumes:
        - mysql-data-production:/var/lib/mysql
