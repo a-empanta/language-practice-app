@@ -1,5 +1,5 @@
 #! /bin/bash
 
-docker-compose -f compose.prod.yaml down --rmi all --volumes --remove-orphans
+sudo docker-compose -f compose.prod.yaml down --rmi all --volumes --remove-orphans
 
-docker system prune -a --volumes --force
+sudo docker system prune -a --volumes --force
