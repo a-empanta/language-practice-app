@@ -45,7 +45,7 @@ WORKDIR /var/www
 # In other cases, it would be possible to copy composer files
 # first, to leverage Docker's layer caching mechanism.
 # -----------------------------------------------------------
-COPY . /var/www
+COPY ./api /var/www
 
 # Install Composer and dependencies
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
@@ -74,7 +74,7 @@ COPY ./docker/production/php-fpm/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Copy the initial storage structure
-COPY ./storage /var/www/storage-init
+COPY ./api/storage /var/www/storage-init
 
 # Copy PHP extensions and libraries from the builder stage
 COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
