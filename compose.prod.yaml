@@ -67,9 +67,8 @@ services:
       - production-network
 
   mysql:
-    image: mysql:9.3.0
+    image: mysql:8.3
     restart: unless-stopped
-    user: mysql
     ports:
       - "3306:3306"
     environment:
