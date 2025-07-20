@@ -21,6 +21,9 @@ RUN npm install && npm run build
 # Stage 2: Nginx production image
 FROM nginx:alpine
 
+# Copy the SSL certificate folder
+COPY ./docker/production/nginx/ssl /etc/nginx
+
 # Copy custom Nginx configuration
 # -----------------------------------------------------------
 # Replace the default Nginx configuration with our custom one
