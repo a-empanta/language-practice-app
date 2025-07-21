@@ -21,15 +21,15 @@ RUN npm install && npm run build
 # Stage 2: Nginx production image
 FROM nginx:alpine
 
-# Copy the SSL certificate folder
-COPY ./docker/production/nginx/ssl /etc/nginx
+# create the target dirs
+RUN mkdir -p /etc/nginx/certs /etc/nginx/private
 
-# Copy custom Nginx configuration
-# -----------------------------------------------------------
-# Replace the default Nginx configuration with our custom one
-# that is optimized for serving a Laravel application.
-# -----------------------------------------------------------
-COPY ./docker/production/nginx/default.conf /etc/nginx/conf.d
+# copy the cert & key into the right place
+COPY ./docker/production/nginx/ssl/certs/nginx-selfsigned.crt   /etc/nginx/certs/
+COPY ./docker/production/nginx/ssl/private/nginx-selfsigned.key /etc/nginx/private/
+
+# then your config
+COPY ./docker/production/nginx/default.conf /etc/nginx/conf.d/
 
 # Copy Laravel's public assets from the builder stage
 # -----------------------------------------------------------
@@ -40,6 +40,6 @@ COPY --from=builder /var/www/public /var/www/public
 # Set the working directory to the public folder
 WORKDIR /var/www/public
 
-EXPOSE 80 443
+EXPOSE 443
 
 CMD ["nginx", "-g", "daemon off;"]
