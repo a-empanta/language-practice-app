@@ -19,9 +19,9 @@ services:
       # - "443:443" 
     stdin_open: true
     tty: true
-    depends_on:
-      php-fpm:
-        condition: service_healthy # Wait for php-fpm health check
+    # depends_on:
+    #   php-fpm:
+    #     condition: service_healthy # Wait for php-fpm health check
 
   php-fpm:
     # For the php-fpm service, we will create a custom image to install the necessary PHP extensions and setup proper permissions.
