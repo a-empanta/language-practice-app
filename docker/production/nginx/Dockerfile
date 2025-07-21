@@ -40,6 +40,6 @@ COPY --from=builder /var/www/public /var/www/public
 # Set the working directory to the public folder
 WORKDIR /var/www/public
 
-# Expose port 80 and start Nginx
-EXPOSE 80
+EXPOSE 80 443
+
 CMD ["nginx", "-g", "daemon off;"]
