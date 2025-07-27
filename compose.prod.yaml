@@ -107,6 +107,7 @@ services:
   #     interval: 10s
   #     timeout: 5s
       # retries: 3
+      
 
 networks:
   # Attach the service to the 'production-network' network.
