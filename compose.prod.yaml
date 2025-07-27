@@ -14,8 +14,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
     stdin_open: true
     tty: true
     depends_on:
@@ -32,8 +32,8 @@ services:
     image: aris1991/laravel-api:php-fpm
     # volumes:
     #   - laravel-storage-production:/var/www/storage # Mount the storage volume
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
     ports:
       - "9000:9000"
     networks:
@@ -62,8 +62,8 @@ services:
     image: aris1991/laravel-api:php-cli
     tty: true # Enables an interactive terminal
     stdin_open: true # Keeps standard input open for 'docker exec'
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
     networks:
       - production-network
 
@@ -107,7 +107,7 @@ services:
   #     interval: 10s
   #     timeout: 5s
       # retries: 3
-      
+
 
 networks:
   # Attach the service to the 'production-network' network.
