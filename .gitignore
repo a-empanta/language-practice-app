@@ -5,3 +5,8 @@ README.md
 *.env
 connect_ec2.sh
 docker/production/nginx/ssl
+compose.server.yaml
+remove-artifacts.sh
+docker-build.sh
+docker-compose-down.sh
+docker-push.sh

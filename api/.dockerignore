@@ -1,0 +1,15 @@
+node_modules
+vendor
+.env
+.env.*
+.git
+.gitignore
+.idea
+.vscode
+*.log
+*.tmp
+.DS_Store
+storage/app/public
+storage/framework/sessions
+storage/framework/views
+storage/logs

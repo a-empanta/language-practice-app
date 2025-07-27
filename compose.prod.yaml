@@ -1,27 +1,26 @@
 services:
-  web:
+  nginx:
     build:
       context: .
       dockerfile: ./docker/production/nginx/Dockerfile
+    image: aris1991/laravel-api:nginx
     restart: unless-stopped
-    volumes:
-      # Mount the 'laravel-storage' volume to '/var/www/storage' inside the container.
-      # -----------------------------------------------------------
-      # This volume stores persistent data like uploaded files and cache.
-      # The ':ro' option mounts it as read-only in the 'web' service because Nginx only needs to read these files.
-      # The 'php-fpm' service mounts the same volume without ':ro' to allow write operations.
-      # -----------------------------------------------------------
-      - laravel-storage-production:/var/www/storage:ro
+    # volumes:
+    #   - laravel-storage-production:/var/www/storage:ro
+    #   - ./certbot/conf:/etc/letsencrypt
+    #   - ./certbot/www:/var/www/certbot
     networks:
       - production-network
     ports:
-      # - "80:80"
-      - "443:443" 
+      - "80:80"
+      - "443:443"
+    env_file:
+      - .env
     stdin_open: true
     tty: true
     depends_on:
       php-fpm:
-        condition: service_healthy # Wait for php-fpm health check
+        condition: service_healthy
 
   php-fpm:
     # For the php-fpm service, we will create a custom image to install the necessary PHP extensions and setup proper permissions.
@@ -30,10 +29,11 @@ services:
       dockerfile: ./docker/production/php-fpm/Dockerfile
       target: production # Use the 'production' stage in the Dockerfile
     restart: unless-stopped
-    volumes:
-      - laravel-storage-production:/var/www/storage # Mount the storage volume
+    image: aris1991/laravel-api:php-fpm
+    # volumes:
+    #   - laravel-storage-production:/var/www/storage # Mount the storage volume
     env_file:
-      - ./api/.env
+      - .env
     ports:
       - "9000:9000"
     networks:
@@ -59,6 +59,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/production/php-cli/Dockerfile
+    image: aris1991/laravel-api:php-cli
     tty: true # Enables an interactive terminal
     stdin_open: true # Keeps standard input open for 'docker exec'
     env_file:
@@ -75,8 +76,8 @@ services:
       - MYSQL_DATABASE=${DB_DATABASE}    # optional
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_PASSWORD=${DB_PASSWORD}
-    volumes:
-       - mysql-data-production:/var/lib/mysql
+    # volumes:
+    #    - mysql-data-production:/var/lib/mysql
     networks:
       - production-network
     # Health check for MySQL

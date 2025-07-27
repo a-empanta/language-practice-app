@@ -24,10 +24,6 @@ FROM nginx:alpine
 # create the target dirs
 RUN mkdir -p /etc/nginx/certs /etc/nginx/private
 
-# copy the cert & key into the right place
-COPY ./docker/production/nginx/ssl/certs/nginx-selfsigned.crt   /etc/nginx/certs/
-COPY ./docker/production/nginx/ssl/private/nginx-selfsigned.key /etc/nginx/private/
-
 # then your config
 COPY ./docker/production/nginx/default.conf /etc/nginx/conf.d/
 
