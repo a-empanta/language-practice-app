@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker Compose Action
 
 on:
   push:
@@ -7,16 +7,23 @@ on:
     branches: [ "master" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker-compose -f compose.prod.yaml up -d --build 
-    - name: Push image to Dockerhub
-      run: |
-        docker login -u aris1991 -p ${{ secrets.DOCKERHUB_TOKEN }}
-        docker compose -f compose.prod.yaml push
+      - uses: actions/checkout@v4.2.2
+
+      - name: Run docker compose
+        uses: hoverkraft-tech/compose-action@v2.0.1
+        with:
+          compose-file: "./compose.prod.yaml"
+
+      # - name: Execute tests in the running services
+      #   run: |
+      #     docker compose exec test-app pytest
+      - name: Build the Docker image
+        run: docker-compose -f compose.prod.yaml up -d --build 
+      - name: Push image to Dockerhub
+        run: |
+          docker login -u aris1991 -p ${{ secrets.DOCKERHUB_TOKEN }}
+          docker compose -f compose.prod.yaml push
