@@ -46,9 +46,9 @@ services:
     # The 'depends_on' attribute with 'condition: service_healthy' ensures that
     # this service will not start until the 'mysql' service passes its health check.
     # This prevents the application from trying to connect to the database before it's ready.
-    depends_on:
-      mysql:
-        condition: service_healthy
+    # depends_on:
+    #   mysql:
+    #     condition: service_healthy
 
   # The 'php-cli' service provides a command-line interface for running Artisan commands and other CLI tasks.
   # -----------------------------------------------------------
@@ -67,46 +67,46 @@ services:
     networks:
       - production-network
 
-  mysql:
-    image: mysql:8.3
-    restart: unless-stopped
-    ports:
-      - "3306:3306"
-    environment:
-      - MYSQL_DATABASE=${DB_DATABASE}    # optional
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
-    # volumes:
-    #    - mysql-data-production:/var/lib/mysql
-    networks:
-      - production-network
-    # Health check for MySQL
-    # -----------------------------------------------------------
-    # Health checks allow Docker to determine if a service is operational.
-    # The 'mysqladmin ping' command checks if MySQL is ready to accept connections.
-    # This prevents dependent services from starting before the database is ready.
-    # -----------------------------------------------------------
-    healthcheck:
-      test: ["CMD", "mysqladmin", "-u$MYSQL_USER", "-p$DB_PASSWORD", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # mysql:
+  #   image: mysql:8.3
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3306:3306"
+  #   environment:
+  #     - MYSQL_DATABASE=${DB_DATABASE}    # optional
+  #     - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+  #     - MYSQL_PASSWORD=${DB_PASSWORD}
+  #   # volumes:
+  #   #    - mysql-data-production:/var/lib/mysql
+  #   networks:
+  #     - production-network
+  #   # Health check for MySQL
+  #   # -----------------------------------------------------------
+  #   # Health checks allow Docker to determine if a service is operational.
+  #   # The 'mysqladmin ping' command checks if MySQL is ready to accept connections.
+  #   # This prevents dependent services from starting before the database is ready.
+  #   # -----------------------------------------------------------
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "-u$MYSQL_USER", "-p$DB_PASSWORD", "ping", "-h", "localhost"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
 
-  redis:
-    image: redis:alpine
-    restart: unless-stopped # Automatically restart unless the service is explicitly stopped
-    networks:
-      - production-network
-    # Health check for Redis
-    # -----------------------------------------------------------
-    # Checks if Redis is responding to the 'PING' command.
-    # This ensures that the service is not only running but also operational.
-    # -----------------------------------------------------------
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+  # redis:
+  #   image: redis:alpine
+  #   restart: unless-stopped # Automatically restart unless the service is explicitly stopped
+  #   networks:
+  #     - production-network
+  #   # Health check for Redis
+  #   # -----------------------------------------------------------
+  #   # Checks if Redis is responding to the 'PING' command.
+  #   # This ensures that the service is not only running but also operational.
+  #   # -----------------------------------------------------------
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 10s
+  #     timeout: 5s
+      # retries: 3
 
 networks:
   # Attach the service to the 'production-network' network.
