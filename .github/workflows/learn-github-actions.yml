@@ -25,21 +25,25 @@ jobs:
 
   deploy:
     # needs: build
-    runs-on: 
-      - self-hosted
-      - Linux
-      - aws-ec2
-
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
-
-      # - name: Run docker compose
-      #   uses: hoverkraft-tech/compose-action@v2.0.1
+      
+      - name: Connect to EC2 instance
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          HOST: ${{ secrets.EC2_HOST }}
+          USER: ${{ secrets.EC2_USER }}
+        run: |
+          echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
+          ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST}
+          pwd
+          ls
 
       - name: Delete old containers 
         run: |
-          ls
-          docker-compose down
+          cd language_practise
+          docker compose down
           docker container prune
 
       - name: |
@@ -48,4 +52,4 @@ jobs:
         run: docker-compose pull
 
       - name: Start services
-        run: docker-compose up -d
+        run: docker compose up -d
