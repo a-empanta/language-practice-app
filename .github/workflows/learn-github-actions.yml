@@ -12,9 +12,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4.2.2
-
-      # - name: Run docker compose
-      #   uses: hoverkraft-tech/compose-action@v2.0.1
         with:
           compose-file: "./compose.prod.yaml"
 
@@ -43,6 +40,7 @@ jobs:
 
       - name: Delete old containers 
         run: |
+          cd language_practise
           docker compose down
           docker container prune
 
