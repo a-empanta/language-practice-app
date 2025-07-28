@@ -40,6 +40,7 @@ jobs:
 
       - name: Delete old containers 
         run: |
+          ls
           cd language_practise
           docker compose down
           docker container prune
