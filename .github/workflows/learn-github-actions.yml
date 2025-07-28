@@ -43,7 +43,7 @@ jobs:
 
       - name: Delete old containers 
         run: |
-          docker-compose down
+          docker compose down
           docker container prune
 
       - name: |
@@ -52,4 +52,4 @@ jobs:
         run: docker-compose pull
 
       - name: Start services
-        run: docker-compose up -d
+        run: docker compose up -d
