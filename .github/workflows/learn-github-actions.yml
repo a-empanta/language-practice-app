@@ -36,20 +36,11 @@ jobs:
           USER: ${{ secrets.EC2_USER }}
         run: |
           echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
-          ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST}
-          pwd
-          ls
-
-      - name: Delete old containers 
-        run: |
-          cd language_practise
-          docker compose down
-          docker container prune
-
-      - name: |
-             docker login -u aris1991 -p ${{ secrets.DOCKERHUB_TOKEN }}
-             Pull Images from dockerhub
-        run: docker-compose pull
-
-      - name: Start services
-        run: docker compose up -d
+          ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
+                cd ~/language_practise
+                docker compose down
+                docker container prune -f
+                echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username aris1991 --password-stdin
+                docker compose pull
+                docker compose up -d
+          EOF
