@@ -24,7 +24,7 @@ jobs:
           docker compose -f compose.prod.yaml push
 
   deploy:
-    # needs: build
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
