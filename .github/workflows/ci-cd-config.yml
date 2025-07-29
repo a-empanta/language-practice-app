@@ -38,9 +38,8 @@ jobs:
           echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
           ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
                 cd ~/language_practise
-                docker compose down
-                docker container prune -f
                 echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username aris1991 --password-stdin
                 docker compose pull
                 docker compose up -d
+                docker system prune -a --volumes
           EOF
