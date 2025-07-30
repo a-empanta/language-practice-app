@@ -11,7 +11,7 @@ services:
       dockerfile: ./docker/production/php-fpm/Dockerfile
       target: production
     image: aris1991/laravel-api:php-fpm
-##
+
   php-cli:
     build:
       context: .

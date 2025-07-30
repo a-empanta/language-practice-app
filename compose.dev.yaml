@@ -1,0 +1,102 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/development/nginx/Dockerfile
+    ports:
+      # Map port 80 inside the container to the port specified by 'NGINX_PORT' on the host machine
+      - "80:80"
+    environment:
+      - NGINX_HOST=localhost
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - laravel-development
+
+  php-fpm:
+    # For the php-fpm service, we will create a custom image to install the necessary PHP extensions and setup proper permissions.
+    build:
+      context: .
+      dockerfile: ./docker/development/php-fpm/Dockerfile
+      target: development
+      args:
+        XDEBUG_ENABLED: ${XDEBUG_ENABLED:-true}
+        XDEBUG_MODE: develop,coverage,debug,profile
+        XDEBUG_HOST: ${XDEBUG_HOST:-host.docker.internal}
+        XDEBUG_IDE_KEY: ${XDEBUG_IDE_KEY:-DOCKER}
+        XDEBUG_LOG: /dev/stdout
+        XDEBUG_LOG_LEVEL: 0
+    env_file:
+      # Load the environment variables from the Laravel application
+      - .env
+    volumes:
+      # Mount the application code for live updates
+      - ./api:/var/www
+    networks:
+      - laravel-development
+    depends_on:
+      mysql:
+        condition: service_healthy  # Wait for mysql to start
+
+  workspace:
+   # For the workspace service, we will also create a custom image to install and setup all the necessary stuff.
+    build:
+      context: .
+      dockerfile: ./docker/development/workspace/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+        XDEBUG_ENABLED: ${XDEBUG_ENABLED:-true}
+        XDEBUG_MODE: develop,coverage,debug,profile
+        XDEBUG_HOST: ${XDEBUG_HOST:-host.docker.internal}
+        XDEBUG_IDE_KEY: ${XDEBUG_IDE_KEY:-DOCKER}
+        XDEBUG_LOG: /dev/stdout
+        XDEBUG_LOG_LEVEL: 0
+    ports:
+      - '${VITE_PORT:-5173}:5173'
+    tty: true  # Enables an interactive terminal
+    stdin_open: true  # Keeps standard input open for 'docker exec'
+    env_file:
+      - .env
+    volumes:
+      - ./api:/var/www
+    networks:
+      - laravel-development
+
+  mysql:
+    image: mysql:8.3
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    volumes:
+       - mysql-data:/var/lib/mysql
+    networks:
+      - laravel-development
+    # Health check for MySQL
+    # -----------------------------------------------------------
+    # Health checks allow Docker to determine if a service is operational.
+    # The 'mysqladmin ping' command checks if MySQL is ready to accept connections.
+    # This prevents dependent services from starting before the database is ready.
+    # -----------------------------------------------------------
+    healthcheck:
+      test: ["CMD", "mysqladmin", "-u$MYSQL_USER", "-p$DB_PASSWORD", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    networks:
+      - laravel-development
+
+networks:
+  laravel-development:
+
+volumes:
+  mysql-data:
