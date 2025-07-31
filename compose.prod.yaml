@@ -17,3 +17,9 @@ services:
       context: .
       dockerfile: ./docker/production/php-cli/Dockerfile
     image: aris1991/laravel-api:php-cli
+
+  frontend:
+    build: 
+      context: .
+      dockerfile: production/react/Dockerfile
+    image: aris1991/laravel-api:frontend
