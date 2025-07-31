@@ -41,5 +41,5 @@ jobs:
                 echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username aris1991 --password-stdin
                 docker compose pull
                 docker compose up -d
-                docker system prune -a --volumes -f
+                docker system prune -a
           EOF
