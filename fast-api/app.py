@@ -2,6 +2,6 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-@api.get("/voice/")
+@api.get("/voice/health")
 def read_root():
-    return {"message": "Hello, World!"}
+    return {"message": "Service Working"}
