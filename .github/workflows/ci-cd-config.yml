@@ -79,6 +79,7 @@ jobs:
                 docker compose pull
                 docker compose up -d
                 docker system prune -a --volumes -f
+                docker compose up -d nginx
           EOF
       
       - name: Ping Host
