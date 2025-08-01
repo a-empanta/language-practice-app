@@ -23,3 +23,5 @@ services:
       context: .
       dockerfile: ./docker/production/react/Dockerfile
     image: aris1991/laravel-api:frontend
+    stdin_open: true
+    tty: true

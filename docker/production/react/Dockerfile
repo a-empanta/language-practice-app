@@ -16,7 +16,7 @@ WORKDIR /var/www/html
 
 COPY ./docker/production/react/default.conf /etc/nginx/conf.d/
 
-COPY --from=react-builder /app/build /usr/share/nginx/html
+COPY --from=react-builder /app/dist /usr/share/nginx/html
 
 EXPOSE 81
 
