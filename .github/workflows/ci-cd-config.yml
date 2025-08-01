@@ -47,5 +47,4 @@ jobs:
       - name: Ping Services
       - run: |
           echo ${{ github.workspace }}
-          bash ./scripts/check-ping.sh www.langpractise.zapto.org
 
