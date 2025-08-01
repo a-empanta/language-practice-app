@@ -44,8 +44,7 @@ jobs:
                 docker system prune -a --volumes -f
           EOF
       
-      - name: Ping Services
+      - name: Ping Host
         run: |
-          echo ${{ github.workspace }}
-          bash ./scripts/check-ping.sh www.langpractise.zapto.org
+          bash ${{ github.workspace }}/.github/workflows/scripts/check-ping.sh www.langpractise.zapto.org
 
