@@ -46,5 +46,5 @@ jobs:
       
       - name: Ping Host
         run: |
-          bash ${{ github.workspace }}/.github/workflows/scripts/check-ping.sh langpractise.zapto.org
+          bash ${{ github.workspace }}/.github/workflows/scripts/check-ping.sh https://langpractise.zapto.org
 
