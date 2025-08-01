@@ -43,3 +43,8 @@ jobs:
                 docker compose up -d
                 docker system prune -a --volumes -f
           EOF
+      
+      - name: Ping Services
+      - run: |
+          ./scripts/check-ping.sh www.langpractise.zapto.org
+
