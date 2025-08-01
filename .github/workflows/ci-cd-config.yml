@@ -45,6 +45,7 @@ jobs:
           EOF
       
       - name: Ping Services
-      - run: |
+        run: |
           echo ${{ github.workspace }}
+          bash ./scripts/check-ping.sh www.langpractise.zapto.org
 
