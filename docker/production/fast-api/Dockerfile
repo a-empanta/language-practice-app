@@ -14,7 +14,7 @@ RUN apt-get update \
 WORKDIR /app
 
 # Copy & install your Python requirements globally
-COPY fastapi/requirements.txt .
+COPY fast-api/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy your FastAPI application code
