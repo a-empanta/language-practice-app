@@ -3,25 +3,25 @@ services:
     build:
       context: .
       dockerfile: ./docker/production/nginx/Dockerfile
-    image: aris1991/laravel-api:nginx
+    image: aris1991/language-practise:nginx
 
   php-fpm:
     build:
       context: .
       dockerfile: ./docker/production/php-fpm/Dockerfile
       target: production
-    image: aris1991/laravel-api:php-fpm
+    image: aris1991/language-practise:php-fpm
 
   php-cli:
     build:
       context: .
       dockerfile: ./docker/production/php-cli/Dockerfile
-    image: aris1991/laravel-api:php-cli
+    image: aris1991/language-practise:php-cli
 
   frontend:
     build: 
       context: .
       dockerfile: ./docker/production/react/Dockerfile
-    image: aris1991/laravel-api:frontend
+    image: aris1991/language-practise:frontend
     stdin_open: true
     tty: true

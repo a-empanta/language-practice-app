@@ -30,7 +30,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /var/www
 
 # Copy the entire Laravel application code into the container
-COPY ./api /var/www
+COPY ./laravel-api /var/www
 
 # Install Composer and dependencies
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \

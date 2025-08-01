@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /var/www
 
 # Copy Laravel application code
-COPY ./api /var/www
+COPY ./laravel-api /var/www
 
 # Install Node.js dependencies and build assets
 RUN npm install && npm run build

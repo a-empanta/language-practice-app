@@ -40,7 +40,7 @@ services:
       - .env
     volumes:
       # Mount the application code for live updates
-      - ./api:/var/www
+      - ./laravel-api:/var/www
     networks:
       - language-practise
     depends_on:
@@ -68,7 +68,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./api:/var/www
+      - ./laravel-api:/var/www
     networks:
       - language-practise
 

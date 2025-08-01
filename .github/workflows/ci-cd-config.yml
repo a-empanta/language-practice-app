@@ -18,9 +18,46 @@ jobs:
       - name: Build the Docker image
         run: docker compose -f compose.prod.yaml build
 
+      - name: Clean out Docker Hub tags
+        env:
+          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          REPO_NAME: ${{ secrets.REPO_NAME }}
+        run: |
+          set -e
+
+          echo "Logging into Docker Hub API…"
+          JWT=$(curl -s -H 'Content-Type: application/json' \
+            -X POST -d "{\"username\":\"$DOCKERHUB_USER\",\"password\":\"$DOCKERHUB_TOKEN\"}" \
+            https://hub.docker.com/v2/users/login/ \
+            | jq -r .token)
+
+          if [ -z "$JWT" ] || [ "$JWT" = "null" ]; then
+            echo "Failed to get JWT from Docker Hub"
+            exit 1
+          fi
+
+          echo "Fetching tags from $DOCKERHUB_USER/$REPO_NAME…"
+          TAGS=$(curl -s -H "Authorization: JWT $JWT" \
+                   "https://hub.docker.com/v2/repositories/$DOCKERHUB_USER/$REPO_NAME/tags?page_size=100" \
+                 | jq -r '.results[].name')
+
+          if [ -z "$TAGS" ]; then
+            echo "No tags found, skipping delete."
+          else
+            for TAG in $TAGS; do
+              echo "Deleting tag: $TAG"
+              curl -s -H "Authorization: JWT $JWT" \
+                   -X DELETE \
+                   "https://hub.docker.com/v2/repositories/$DOCKERHUB_USER/$REPO_NAME/tags/$TAG/" \
+                || echo "Warning: failed to delete $TAG"
+            done
+          fi
+
       - name: Push image to Dockerhub
         run: |
           docker login -u aris1991 -p ${{ secrets.DOCKERHUB_TOKEN }}
+          # here
           docker compose -f compose.prod.yaml push
 
   deploy:
