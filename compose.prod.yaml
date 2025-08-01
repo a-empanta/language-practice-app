@@ -18,6 +18,14 @@ services:
       dockerfile: ./docker/production/php-cli/Dockerfile
     image: aris1991/language-practise:php-cli
 
+  fast-api:
+    build: 
+      context: .
+      dockerfile: ./docker/production/fast-api/Dockerfile
+    image: aris1991/language-practise:fast-api
+    stdin_open: true
+    tty: true
+
   frontend:
     build: 
       context: .
