@@ -3,7 +3,7 @@ set -e
 
 HOST="${1}"
 
-if curl -s --head --connect-timeout 10 $HOST; then
+if ! curl -s --head --connect-timeout 10 $HOST; then
   echo "Domain $HOST is not pingable"
   exit 1
 else
