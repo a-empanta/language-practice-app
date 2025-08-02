@@ -76,10 +76,16 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
                 cd ~/language_practise
                 echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username aris1991 --password-stdin
-                docker compose pull
-                docker compose down
-                docker compose up -d
+
+                echo "Cleaning up all previous docker artifacts:"
+                docker-compose down --rmi all --volumes --remove-orphans
                 docker system prune -a --volumes -f
+
+                echo "Pulling new images:"
+                docker compose pull
+
+                echo "Starting the containers:"
+                docker compose up -d
           EOF
       
       - name: Ping Host
