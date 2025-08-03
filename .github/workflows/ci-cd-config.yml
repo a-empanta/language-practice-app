@@ -76,7 +76,6 @@ jobs:
           script: |
             cd ~/language_practise
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username aris1991 --password-stdin
-            sudo systemctl stop nginx
             docker compose pull
             docker compose down
             docker compose up -d
