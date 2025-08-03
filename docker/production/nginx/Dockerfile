@@ -19,7 +19,7 @@ COPY ./laravel-api /var/www
 RUN npm install && npm run build
 
 # Stage 2: Nginx production image
-FROM nginx:1.29.0-alpine
+FROM nginx:stable-perl
 
 # create the target dirs
 RUN mkdir -p /etc/nginx/certs /etc/nginx/private
