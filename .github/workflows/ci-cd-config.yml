@@ -73,8 +73,6 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          timeout: 120
-          command_timeout: 20
           script: |
             set -x
             cd ~/language_practise
