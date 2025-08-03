@@ -10,7 +10,7 @@ COPY frontend .
  
 RUN npm run build
 
-FROM nginx:alpine
+FROM nginx:1.29.0-alpine
 
 WORKDIR /var/www/html
 
