@@ -78,7 +78,6 @@ jobs:
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username aris1991 --password-stdin
             docker compose down --remove-orphans --rmi all
             docker compose pull
-            docker compose down  --remove-orphans
             docker compose up -d
             docker system prune -af
       
