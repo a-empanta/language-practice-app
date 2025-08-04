@@ -14,9 +14,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
     libicu-dev \
     libzip-dev \
+    libsqlite3-dev  \
     && docker-php-ext-install -j$(nproc) \
     pdo_mysql \
     pdo_pgsql \
+    pdo_sqlite \
     pgsql \
     opcache \
     intl \
@@ -62,6 +64,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
     libfcgi-bin \
     procps \
+    libsqlite3-0 \
     && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Download and install php-fpm health check script
