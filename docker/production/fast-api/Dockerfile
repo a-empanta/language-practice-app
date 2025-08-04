@@ -44,10 +44,6 @@ COPY --from=builder /app .
 # Expose the port the app listens on
 EXPOSE 8000
 
-# (Optional) let Docker healthcheck know when the app is ready
-# HEALTHCHECK --interval=30s --timeout=5s --start-period=5s \
-# CMD curl --fail http://localhost:8000/voice/health || exit 1
-
 # Start Gunicorn with Uvicorn workers
 CMD ["gunicorn", \
      "app:app", \
