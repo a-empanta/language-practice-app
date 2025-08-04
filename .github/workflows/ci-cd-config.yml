@@ -74,13 +74,13 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            set -x
             cd ~/language_practise
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username aris1991 --password-stdin
+            docker compose down --remove-orphans --rmi all
             docker compose pull
             docker compose down  --remove-orphans
             docker compose up -d
-            docker system prune
+            docker system prune -af
       
       - name: Ping Host
         run: |
