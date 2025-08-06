@@ -1,7 +1,5 @@
 .gitignore
-Dockerfile
 .dockerignore
 **/__pycache__/
 **/*.py[cod]
-*.log
 .env
