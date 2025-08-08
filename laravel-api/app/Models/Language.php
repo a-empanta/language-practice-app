@@ -14,11 +14,15 @@ class Language extends Model
         'speech_generator_language_code',
         'speech_generator_voice_id',
         'speech_generator_gender',
-        'is_translating_language',
     ];
 
-    public function conversations(): BelongsToMany
+    public function nativeConversations()
     {
-        return $this->belongsToMany(Conversation::class);
+        return $this->hasMany(Conversation::class, 'native_language_id');
+    }
+
+    public function practisingConversations()
+    {
+        return $this->hasMany(Conversation::class, 'practising_language_id');
     }
 }

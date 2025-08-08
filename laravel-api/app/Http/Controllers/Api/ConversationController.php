@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\SenderType;
 use App\Http\Controllers\Controller;
 use App\Models\Message;
+use App\Models\Language;
 use Aws\Polly\PollyClient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -55,10 +56,26 @@ class ConversationController extends Controller
         ]);
     }
 
+    public function getAvailableLanguages(): JsonResponse
+    {
+        return response()->json([
+            'languages' => Language::pluck('id', 'name')->toArray(),
+        ]);
+    }
+
     public function newConversation(Request $request): JsonResponse
     {
-        $conversation = auth()->user()->conversations()->create();
+        $conversation = auth()->user()->conversations()->create(
+            [
+                'topic_id' => $request['topicId'],
+                'level'    => $request['level'],
+                'native_language_id'  => $request['nativeLanguageId'],
+                'practising_language_id' => $request['practiseLanguageId'],
+            ]
+        );
+                
         return response()->json([
+            'message'        => 'Conversation created successfully',
             'conversationId' => $conversation->id,
         ]);
     }

@@ -23,8 +23,7 @@ const Conversation = () => {
   const navigate = useNavigate();
   const { startRecording, stopRecording, } = useReactMediaRecorder({audio: true, onStop: (blobUrl) => sendBlob(blobUrl) });
 
-
-  // State  
+  // State
   const [lang, setLang] = useState("nl-NL");
   const [userTranscript, setUserTranscript] = useState('')
   const [respondingText, setRespondingText] = useState('');

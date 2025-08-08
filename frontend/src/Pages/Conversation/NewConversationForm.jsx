@@ -14,6 +14,9 @@ export default function NewConversationForm() {
     const [selectedTopicId, setSelectedTopicId] = useState(0);
     const [loadingTopicCategories, setLoadingTopicCategories] = useState(true);
     const [level, setLevel] = useState("Beginner (A1)");
+    const [availableLanguages, setAvailableLanguages] = useState({});
+    const [practiseLanguageId, setPractiseLanguageId] = useState(0);
+    const [nativeLanguageId, setNativeLanguageId] = useState(0);
 
     const levels = [
         { value: "Beginner (A1)", label: "Beginner (A1)" },
@@ -52,11 +55,24 @@ export default function NewConversationForm() {
     }
 
     async function getAvailableLanguages() {
+        let languages;
+
         try {
+            const response = await axios.get(
+                    `${laravelBaseUrl}/api/get-available-languages`,
+                    {
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                    }
+                }
+            );
+            languages = response.data.languages;
         } catch (err) {
-            // Handle error if necessary
+            console.log(err.message);
         } finally {
-            // Finalize loading state if needed
+            setAvailableLanguages(languages);
         }
     }
 
@@ -68,15 +84,36 @@ export default function NewConversationForm() {
         setTopics(selectedTopicCategoryObject.topics);
         setSelectedTopicCategoryId(selectedTopicCategoryObject.id);
         setSelectedTopicId(selectedTopicCategoryObject.topics[0].id);
+
     }
 
     async function handleEnterNewConversation(e) {
         e.preventDefault();
-        console.log("Category id:" + selectedTopicCategoryId);
-        console.log("Topic id:" + selectedTopicId);
-        console.log("Level:" + level);
+        let conversationId;
 
-        // You can continue to handle the conversation creation here
+        try {
+            const response = await axios.post(`${laravelBaseUrl}/api/new-conversation`,
+                                                    {
+                                                        practiseLanguageId: practiseLanguageId,
+                                                        nativeLanguageId: nativeLanguageId,
+                                                        categoryId: selectedTopicCategoryId,
+                                                        topicId: selectedTopicId,
+                                                        level: level
+                                                    },
+                                                    {
+                                                        headers: {
+                                                            "Accept": "application/json",
+                                                            "Content-Type": "application/json",
+                                                            "Authorization": `Bearer ${token}`
+                                                        }
+                                                    }
+                                                  )
+            conversationId = response.data.conversationId;
+        } catch (err) {
+            console.log(err.message);
+        } finally {
+            navigate(`/conversations/${conversationId}`);
+        }        
     }
 
     return (
@@ -86,6 +123,36 @@ export default function NewConversationForm() {
                     Fill up this form
                 </h1>
                 <form onSubmit={handleEnterNewConversation}>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Language to practise
+                    </label>
+                    <select
+                        className="w-full p-2 border border-gray-300 rounded-lg"
+                        value={practiseLanguageId}
+                        onChange={(event) => setPractiseLanguageId(event.target.value)}
+                    >
+                        {Object.keys(availableLanguages).length > 0 &&
+                         Object.entries(availableLanguages).map(([name, id]) => (
+                            <option key={id} value={id}>
+                            {name}
+                            </option>
+                        ))}
+                    </select>
+                     <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Native Language
+                    </label>
+                    <select
+                        className="w-full p-2 border border-gray-300 rounded-lg"
+                        value={nativeLanguageId}
+                        onChange={(event) => setNativeLanguageId(event.target.value)}
+                    >
+                        {Object.keys(availableLanguages).length > 0 &&
+                         Object.entries(availableLanguages).map(([name, id]) => (
+                            <option key={id} value={id}>
+                            {name}
+                            </option>
+                        ))}
+                    </select>
                     <label className="block mb-2 text-sm font-medium text-gray-700">
                         Category
                     </label>

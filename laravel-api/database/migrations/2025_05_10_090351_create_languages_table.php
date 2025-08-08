@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('speech_generator_language_code')->nullable();
             $table->string('speech_generator_voice_id')->nullable();
             $table->enum('speech_generator_gender', SpeechGeneratorGender::all())->nullable();
-            $table->boolean('is_translating_language')->default(true);
             $table->timestamps();
         });
     }

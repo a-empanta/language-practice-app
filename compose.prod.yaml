@@ -23,13 +23,9 @@ services:
       context: .
       dockerfile: ./docker/production/fast-api/Dockerfile
     image: aris1991/language-practise:fast-api
-    stdin_open: true
-    tty: true
 
   frontend:
     build: 
       context: .
       dockerfile: ./docker/production/react/Dockerfile
     image: aris1991/language-practise:frontend
-    stdin_open: true
-    tty: true

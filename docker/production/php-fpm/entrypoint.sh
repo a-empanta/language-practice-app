@@ -20,6 +20,7 @@ rm -rf /var/www/storage-init
 # Ensure the database schema is up to date.
 # -----------------------------------------------------------
 php artisan migrate --force
+php artisan db:seed
 
 # Clear and cache configurations
 # -----------------------------------------------------------

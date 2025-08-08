@@ -10,3 +10,4 @@ remove-artifacts.sh
 docker-build.sh
 docker-compose-down.sh
 docker-push.sh
+tasks.txt

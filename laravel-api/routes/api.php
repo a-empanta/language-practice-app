@@ -29,6 +29,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/prompt/{id}', [ConversationController::class, 'reply']);
 
+    Route::get('/get-available-languages', [ConversationController::class, 'getAvailableLanguages']);
+
     Route::get('/speech/{filename}', function ($filename) {
         $userId = auth()->id();
 

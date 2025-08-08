@@ -11,6 +11,10 @@ class Conversation extends Model
 {
     protected $fillable = [
         'user_id',
+        'topic_id',
+        'level',
+        'native_language_id',
+        'practising_language_id',
     ];
 
     public function user(): BelongsTo
@@ -18,13 +22,23 @@ class Conversation extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function topic(): BelongsTo
+    {
+        return $this->belongsTo(Topic::class);
+    }
+
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
     }
 
-    public function languages(): BelongsToMany
+    public function nativeLanguage()
     {
-        return $this->belongsToMany(Language::class);
+        return $this->belongsTo(Language::class, 'native_language_id');
+    }
+
+    public function practisingLanguage()
+    {
+        return $this->belongsTo(Language::class, 'practising_language_id');
     }
 }

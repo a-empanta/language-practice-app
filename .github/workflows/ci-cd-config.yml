@@ -60,30 +60,31 @@ jobs:
           # here
           docker compose -f compose.prod.yaml push
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4.2.2
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v4.2.2
 
-      - name: Deploy to EC2 instance
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            cd ~/language_practise
-            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username aris1991 --password-stdin
-            docker compose down --remove-orphans --rmi all
-            docker compose pull
-            docker compose up -d
-            docker system prune -af
+  #     - name: Deploy to EC2 instance
+  #       uses: appleboy/ssh-action@v1
+  #       with:
+  #         host: ${{ secrets.EC2_HOST }}
+  #         username: ${{ secrets.EC2_USER }}
+  #         key: ${{ secrets.SSH_KEY }}
+  #         port: ${{ secrets.SSH_PORT }}
+  #         script: |
+  #           cd ~/language_practise
+  #           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username aris1991 --password-stdin
+  #           docker system prune -a --force
+  #           docker volume prune
+  #           docker compose pull
+  #           docker compose up -d
+  #           docker system prune -af
       
-      - name: Ping Host
-        run: |
-          bash ${{ github.workspace }}/.github/workflows/scripts/check-ping.sh https://langpractise.zapto.org
-          bash ${{ github.workspace }}/.github/workflows/scripts/check-ping.sh https://langpractise.zapto.org/api/health-check
-          bash ${{ github.workspace }}/.github/workflows/scripts/check-ping.sh https://langpractise.zapto.org/voice/health-check
+  #     - name: Ping Host
+  #       run: |
+  #         bash ${{ github.workspace }}/.github/workflows/scripts/check-ping.sh https://langpractise.zapto.org
+  #         bash ${{ github.workspace }}/.github/workflows/scripts/check-ping.sh https://langpractise.zapto.org/api/health-check
+  #         bash ${{ github.workspace }}/.github/workflows/scripts/check-ping.sh https://langpractise.zapto.org/voice/health-check
 

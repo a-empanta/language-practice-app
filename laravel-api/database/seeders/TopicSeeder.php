@@ -12,6 +12,10 @@ class TopicSeeder extends Seeder
      */
     public function run(): void
     {
+        if(TopicCategory::count() > 0) {
+            return;
+        }
+
         $data = [
             'Daily Life' => [
                 'Morning rituals',
