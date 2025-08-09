@@ -2,8 +2,9 @@ import wave
 import json
 from vosk import Model, KaldiRecognizer
 import subprocess
+import logging
 
-model = Model(lang="en-us")  # Load once globally
+logger = logging.getLogger(__name__)
 
 def convert_to_wav(input_path: str, output_path: str):
     try:
@@ -15,12 +16,14 @@ def convert_to_wav(input_path: str, output_path: str):
     except subprocess.CalledProcessError:
         raise RuntimeError("ffmpeg conversion failed")
 
-def transcribe_wav(file_path: str) -> str:
+def transcribe_wav(file_path: str, model_name: str) -> str:
+    model = Model(model_name=model_name)
     wf = wave.open(file_path, "rb")
-
+    
     if wf.getnchannels() != 1 or wf.getsampwidth() != 2:
+        logger.error("Audio must be mono PCM WAV with 16-bit samples")
         raise ValueError("Audio must be mono PCM WAV with 16-bit samples")
-
+    
     rec = KaldiRecognizer(model, wf.getframerate())
     transcript_parts = []
 
@@ -34,6 +37,8 @@ def transcribe_wav(file_path: str) -> str:
 
     # Add final part
     final_result = json.loads(rec.FinalResult())
+    logger.info(final_result)
+
     transcript_parts.append(final_result.get("text", ""))
 
     return " ".join(transcript_parts).strip()

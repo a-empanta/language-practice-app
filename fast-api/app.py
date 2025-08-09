@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException, Header
+from fastapi import FastAPI, File, UploadFile, HTTPException, Header, Form
 import shutil
 import os
 from transcriber import convert_to_wav, transcribe_wav
@@ -22,7 +22,7 @@ app = FastAPI()
 app.add_middleware(
   CORSMiddleware,
   allow_origins=["*"],  # or ["*"] for any origin
-  allow_methods=["*"],                      # allow all HTTP methods (including OPTIONS)
+  allow_methods=["*"],  # allow all HTTP methods (including OPTIONS)
   allow_headers=["*"],
 )
 
@@ -31,10 +31,8 @@ UPLOAD_DIR = "/tmp"
 environment = os.getenv('APP_ENV')
 
 @app.post("/voice/transcribe")
-async def transcribe(file: UploadFile = File(...), authorization: str = Header(None)):
+async def transcribe(file: UploadFile = File(...), model_name: str = Form(...) ,authorization: str = Header(None)):
     url = "http://web" if environment == "local" else os.getenv('APP_URL')
-    logging.info(environment)
-    
     validate_user(authorization, url)
     
     if not file.filename.endswith((".wav", ".webm", ".ogg", ".mp3")):
@@ -48,8 +46,8 @@ async def transcribe(file: UploadFile = File(...), authorization: str = Header(N
 
         converted_path = original_path + "_converted.wav"
         convert_to_wav(original_path, converted_path)
-        transcript = transcribe_wav(converted_path)
-        logging.info(transcript)
+        transcript = transcribe_wav(converted_path, model_name).replace('<unk>', '')
+        
         return {"transcript": transcript}
 
     except Exception as e:
@@ -63,4 +61,5 @@ async def transcribe(file: UploadFile = File(...), authorization: str = Header(N
 
 @app.get("/voice/health-check")
 def health_check():
+    # logging.error('hey')
     return {"message": "Service Working"}

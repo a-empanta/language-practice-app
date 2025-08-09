@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ConversationController;
 use App\Http\Controllers\Api\TopicCategoryController;
+use App\Http\Controllers\Api\LanguageController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -29,7 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/prompt/{id}', [ConversationController::class, 'reply']);
 
-    Route::get('/get-available-languages', [ConversationController::class, 'getAvailableLanguages']);
+    Route::get('/get-available-languages', [LanguageController::class, 'getAvailableLanguages']);
 
     Route::get('/speech/{filename}', function ($filename) {
         $userId = auth()->id();

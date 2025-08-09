@@ -131,7 +131,8 @@ export default function NewConversationForm() {
                         value={practiseLanguageId}
                         onChange={(event) => setPractiseLanguageId(event.target.value)}
                     >
-                        {Object.keys(availableLanguages).length > 0 &&
+                        {availableLanguages &&
+                         Object.keys(availableLanguages).length > 0 &&
                          Object.entries(availableLanguages).map(([name, id]) => (
                             <option key={id} value={id}>
                             {name}
@@ -146,7 +147,8 @@ export default function NewConversationForm() {
                         value={nativeLanguageId}
                         onChange={(event) => setNativeLanguageId(event.target.value)}
                     >
-                        {Object.keys(availableLanguages).length > 0 &&
+                        {availableLanguages &&
+                         Object.keys(availableLanguages).length > 0 &&
                          Object.entries(availableLanguages).map(([name, id]) => (
                             <option key={id} value={id}>
                             {name}

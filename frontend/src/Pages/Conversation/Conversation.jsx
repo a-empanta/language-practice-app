@@ -59,9 +59,11 @@ const Conversation = () => {
     const response = await fetch(blobUrl);
     const blob = await response.blob();
     const file = new File([blob], 'recording.wav', { type: 'audio/wav' });
-
+    const modelName = conversation.practising_language.transcriber_ai_model;
     const formData = new FormData();
+
     formData.append('file', file);
+    formData.append('model_name', modelName);
 
     const transcriptionResponse = await axios.post( `${fastApiBaseUrl}/voice/transcribe`, 
                                                     formData, 
@@ -70,6 +72,7 @@ const Conversation = () => {
                                                       'Content-Type'  : 'multipart/form-data' 
                                                       } 
                                                     });
+    console.log(transcriptionResponse)
 
     setUserTranscript(transcriptionResponse.data.transcript);
   }

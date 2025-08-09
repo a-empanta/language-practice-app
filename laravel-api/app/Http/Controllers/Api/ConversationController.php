@@ -51,15 +51,9 @@ class ConversationController extends Controller
     public function getLatestConversation(Request $request): JsonResponse
     {
         $latest = auth()->user()->conversations()->latest()->first();
+
         return response()->json([
             'conversationId' => $latest->id,
-        ]);
-    }
-
-    public function getAvailableLanguages(): JsonResponse
-    {
-        return response()->json([
-            'languages' => Language::pluck('id', 'name')->toArray(),
         ]);
     }
 
@@ -82,7 +76,10 @@ class ConversationController extends Controller
 
     public function show(int $id): JsonResponse
     {
-        $conversation = auth()->user()->conversations()->findOrFail($id);
+        $conversation = auth()->user()->conversations()
+                        ->with(['nativeLanguage', 'practisingLanguage', 'topic'])
+                        ->findOrFail($id);
+
         return response()->json($conversation);
     }
 
