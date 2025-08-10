@@ -41,8 +41,6 @@ class ConversationController extends Controller
         $replyDutchAudioDataUri  = $this->synthesizeSpeech($replyDutch);
 
         $this->saveConversation($data['prompt'], $replyDutch, $id);
-        \Log::info('response: ' . $replyDutch);
-        \Log::info('translation: ' . $replyTranslation);
 
         return response()->json([
             'message'     => 'Data received successfully!',
@@ -90,6 +88,8 @@ class ConversationController extends Controller
 
     private function buildMessages(int $conversationId, string $userPrompt, string $practisingLanguage, string $nativeLanguage): array
     {
+        $conversation = Conversation::find($conversationId);
+        $topic = $conversation->topic->title;
         $latestMessage = Message::where('conversation_id', $conversationId)
                                 ->latest()
                                 ->first();
@@ -97,15 +97,16 @@ class ConversationController extends Controller
         $inaproppriate = $practisingLanguageRecord->phrases['inappropriate'];
         $mistake = $practisingLanguageRecord->phrases['mistake'];
         $misunderstanding = $practisingLanguageRecord->phrases['missunderstanding'];
-        \Log::info($inaproppriate);
-        \Log::info($mistake);
-        \Log::info($misunderstanding);
+        $topicChange = $practisingLanguage->phrases['topic_change'];
 
         $system = <<<EOT
                         You are a friendly {$practisingLanguage}-language tutor bot.
                         Rules:
                         1. Respond only in {$practisingLanguage}.
                         2. Keep your reply short: no more than 15 words.
+                        3. Your responses should be strictly at level {$conversation->level}.
+                        6. If the user tries to change the topic, always answer this:
+                        {$topicChange}
                         3. If the user's request is abusive, sexual, illegal, or inappropriate, respond exactly:
                         {$inaproppriate}
                         4. Always return your reply in this exact JSON format (no extra text, no markdown):
