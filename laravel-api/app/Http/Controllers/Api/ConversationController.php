@@ -6,6 +6,7 @@ use App\Enums\SenderType;
 use App\Http\Controllers\Controller;
 use App\Models\Message;
 use App\Models\Language;
+use App\Models\Conversation;
 use Aws\Polly\PollyClient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -20,25 +21,28 @@ class ConversationController extends Controller
         $data = $request->validate([
             'prompt' => 'required|string',
         ]);
-        
-        $language = 'Dutch';
-        $messages = $this->buildMessages($id, $data['prompt'], $language);
+        $conversation = Conversation::find($id);
+        $nativeLanguage = Language::find($conversation->native_language_id)->name;
+        $practisingLanguage = Language::find($conversation->practising_language_id)->name;
+        $messages = $this->buildMessages($id, $data['prompt'], $practisingLanguage, $nativeLanguage);
 
         $body = [
-            'model'    => env('AI_MODEL'),
-            'messages' => $messages,
-            ];
+                 'model'    => env('AI_MODEL'),
+                 'messages' => $messages,
+                ];
 
         $response = Http::timeout(-1)
                         ->withToken(env('GROQ_API_KEY'))
                         ->post("https://api.groq.com/openai/v1/chat/completions", $body);
 
-        $parsed           = $this->formatAiResponse($response);
+        $parsed           = $this->formatAiResponse($response, $nativeLanguage);
         $replyDutch       = $parsed['response'];
-        $replyTranslation = $parsed['translation'];
+        $replyTranslation = isset($parsed['translation']) ? $parsed['translation'] : null;
         $replyDutchAudioDataUri  = $this->synthesizeSpeech($replyDutch);
 
         $this->saveConversation($data['prompt'], $replyDutch, $id);
+        \Log::info('response: ' . $replyDutch);
+        \Log::info('translation: ' . $replyTranslation);
 
         return response()->json([
             'message'     => 'Data received successfully!',
@@ -51,9 +55,10 @@ class ConversationController extends Controller
     public function getLatestConversation(Request $request): JsonResponse
     {
         $latest = auth()->user()->conversations()->latest()->first();
+        
 
         return response()->json([
-            'conversationId' => $latest->id,
+            'conversationId' => $latest ? $latest->id : null,
         ]);
     }
 
@@ -83,20 +88,40 @@ class ConversationController extends Controller
         return response()->json($conversation);
     }
 
-    private function buildMessages(int $conversationId, string $userPrompt, string $language): array
+    private function buildMessages(int $conversationId, string $userPrompt, string $practisingLanguage, string $nativeLanguage): array
     {
+        $latestMessage = Message::where('conversation_id', $conversationId)
+                                ->latest()
+                                ->first();
+        $practisingLanguageRecord = Language::where('name', $practisingLanguage)->first();
+        $inaproppriate = $practisingLanguageRecord->phrases['inappropriate'];
+        $mistake = $practisingLanguageRecord->phrases['mistake'];
+        $misunderstanding = $practisingLanguageRecord->phrases['missunderstanding'];
+        \Log::info($inaproppriate);
+        \Log::info($mistake);
+        \Log::info($misunderstanding);
+
         $system = <<<EOT
-                        You are a friendly {$language}-language tutor bot.
+                        You are a friendly {$practisingLanguage}-language tutor bot.
                         Rules:
-                        1. Respond only in {$language}.
+                        1. Respond only in {$practisingLanguage}.
                         2. Keep your reply short: no more than 15 words.
                         3. If the user's request is abusive, sexual, illegal, or inappropriate, respond exactly:
-                        "Het spijt me, maar ik kan daar niet bij helpen."
+                        {$inaproppriate}
                         4. Always return your reply in this exact JSON format (no extra text, no markdown):
 
                         {
-                        "response": "<your {$language} reply>",
-                        "translation": "<English translation of your {$language} reply>"
+                        "response": "<your {$practisingLanguage} reply>",
+                        "translation": "<Translation in {$nativeLanguage} language of your {$practisingLanguage} reply>"
+                        }
+                        5. If the latest message has any vocabulary, grammar, syntax, or any kind of mistakes,
+                           reply in this exact JSON format (no extra text, no markdown):
+                        {
+                        "response": "{$mistake} <corrected phrase or suggestion in {$practisingLanguage} language>?"
+                        }
+                        6. If you just didn't understand what the user means reply in this exact JSON format (no extra text, no markdown):
+                        {
+                        "response": {$misunderstanding}
                         }
                     EOT;
 
@@ -129,11 +154,10 @@ class ConversationController extends Controller
         return $historyString;
     }
 
-    private function formatAiResponse(ApiResponse $response): array
+    private function formatAiResponse(ApiResponse $response, string $nativeLanguage): array
     {
         $default = [
-            'response'    => 'Het spijt me, maar ik begrijp niet wat je bedoelt. Kun je dat herhalen?',
-            'translation' => 'I am sorry, but I do not understand what you mean. Could you repeat that?'
+            'response' => 'I am sorry, but I do not understand what you mean. Could you repeat that?'
         ];
 
         $json = $response->json();
@@ -152,11 +176,13 @@ class ConversationController extends Controller
         }
         
         $decodedResponse = json_decode($parsed, true);
+        $response = ['response' => $decodedResponse['response']];
 
-        return [
-            'response'    => $decodedResponse['response'],
-            'translation' => $decodedResponse['translation'],
-        ];
+        if(isset($decodedResponse['translation'])) {
+            $response['translation'] = $decodedResponse['translation'];
+        }
+
+        return $response;
     }
 
     public function synthesizeSpeech(string $text): ?string

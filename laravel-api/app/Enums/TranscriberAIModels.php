@@ -5,7 +5,6 @@ namespace App\Enums;
 enum TranscriberAIModels: string
 {
     case ENGLISH_US = "vosk-model-en-us-0.42-gigaspeech";
-    case INDIAN_ENGLISH = "vosk-model-en-in-0.5";
     case CHINESE_MANDARIN = "vosk-model-cn-0.22";
     case RUSSIAN = "vosk-model-ru-0.42";
     case FRENCH = "vosk-model-fr-0.22";

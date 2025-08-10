@@ -20,8 +20,7 @@ export default function EnterConversation() {
   }
 
   // Make an api request to fetch the last conversation of this specific user
-  async function fetchLatestConversation() {
-      
+  async function fetchLatestConversation() {      
     try {
       const res = await fetch(`${laravelBaseUrl}/api/get-latest-conversation`, {
           headers: {
@@ -30,38 +29,17 @@ export default function EnterConversation() {
               "Authorization": `Bearer ${token}`
             },
       });
+      const data = await res.json();
+      setLatestConversationId(data.conversationId);      
     } catch (err) {
       console.log(err.message);
     }
-      
-
-      const data = await res.json();
-
-      setLatestConversationId(data.conversationId)
   }
 
   async function handleEnterNewConversation (e) {
     e.preventDefault()
     navigate('/new-conversation-form');
   }
-
-  // Make an Http Request to create a new conversation for the user and navigate to it
-  // async function handleEnterNewConversation (e) {
-  //     e.preventDefault()
-
-  //     const res = await fetch(`${laravelBaseUrl}/api/new-conversation`, {
-  //         method: "POST",
-  //         headers: {
-  //           "Accept": "application/json",
-  //           "Content-Type": "application/json",
-  //           "Authorization": `Bearer ${token}`
-  //         },
-  //     });
-
-  //     const data = await res.json();
-
-  //     navigate(`${data.conversationId}`);
-  // }
 
   return (
     <div className="min-h-[100vh] flex flex-col justify-center items-center bg-gradient-to-b from-[#e5deff] to-[#d3e4fd] px-4">

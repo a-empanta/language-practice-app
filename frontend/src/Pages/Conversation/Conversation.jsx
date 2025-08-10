@@ -72,7 +72,6 @@ const Conversation = () => {
                                                       'Content-Type'  : 'multipart/form-data' 
                                                       } 
                                                     });
-    console.log(transcriptionResponse)
 
     setUserTranscript(transcriptionResponse.data.transcript);
   }

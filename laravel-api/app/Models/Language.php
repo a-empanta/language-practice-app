@@ -14,6 +14,11 @@ class Language extends Model
         'speech_generator_language_code',
         'speech_generator_voice_id',
         'speech_generator_gender',
+        'phrases',
+    ];
+
+    protected $casts = [
+        'phrases' => 'json',
     ];
 
     public function nativeConversations()

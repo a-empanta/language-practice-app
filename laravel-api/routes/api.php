@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Enums\ReusablePhrases;
 
 Route::post('/register', [AuthController::class, 'register']);
 
@@ -46,6 +47,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::get('/health-check', function (Request $request) {
-    \Log::info('here');
+    \Log::info(['phrases'                          => ReusablePhrases::KOREAN->allTranslations(),]);
     return ['message' => 'Service working'];
 });
