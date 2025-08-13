@@ -61,7 +61,15 @@ class ConversationController extends Controller
     }
 
     public function newConversation(Request $request): JsonResponse
-    {
+    {        
+        $data = $request->validate([
+            'practiseLanguageId' => 'required|integer|exists:languages,id',
+            'nativeLanguageId' => 'required|integer|exists:languages,id',
+            'categoryId' => 'required|integer|exists:topic_categories,id',
+            'topicId' => 'required|integer|exists:topics,id',
+            'level' => 'required|string|max:255',
+        ]);
+
         $conversation = auth()->user()->conversations()->create(
             [
                 'topic_id' => $request['topicId'],

@@ -5,7 +5,7 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 
 export default function NewConversationForm() {
-    const { token, laravelBaseUrl } = useContext(AppContext);
+    const { token, laravelBaseUrl, setLoading } = useContext(AppContext);
     const navigate = useNavigate();
 
     const [topicCategoriesWithTopics, setTopicCategoriesWithTopics] = useState([]);
@@ -17,6 +17,7 @@ export default function NewConversationForm() {
     const [availableLanguages, setAvailableLanguages] = useState({});
     const [practiseLanguageId, setPractiseLanguageId] = useState(0);
     const [nativeLanguageId, setNativeLanguageId] = useState(0);
+    const [formError, setFormError] = useState('');
 
     const levels = [
         { value: "Beginner (A1)", label: "Beginner (A1)" },
@@ -28,8 +29,8 @@ export default function NewConversationForm() {
     ];
 
     useEffect(() => {
-        getTopicCategories();
-        getAvailableLanguages();
+            getTopicCategories();
+            getAvailableLanguages();
     }, []);
 
     async function getTopicCategories() {
@@ -72,6 +73,9 @@ export default function NewConversationForm() {
         } catch (err) {
             console.log(err.message);
         } finally {
+            let firstLanguage = Object.values(languages)[0];
+            setPractiseLanguageId(firstLanguage);
+            setNativeLanguageId(firstLanguage);
             setAvailableLanguages(languages);
         }
     }
@@ -84,7 +88,6 @@ export default function NewConversationForm() {
         setTopics(selectedTopicCategoryObject.topics);
         setSelectedTopicCategoryId(selectedTopicCategoryObject.id);
         setSelectedTopicId(selectedTopicCategoryObject.topics[0].id);
-
     }
 
     async function handleEnterNewConversation(e) {
@@ -109,101 +112,141 @@ export default function NewConversationForm() {
                                                     }
                                                   )
             conversationId = response.data.conversationId;
-        } catch (err) {
-            console.log(err.message);
-        } finally {
             navigate(`/conversations/${conversationId}`);
-        }        
+        } catch (err) {
+            if(err.response.status >= 400 && err.response.status < 500) {
+                return setFormError('There are error or missing fields in your form.');
+            }
+            setFormError('An unexpected error occurred on the server. Please try again later.');
+        }   
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 p-4">
-            <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
-                <h1 className="text-3xl font-extrabold text-center text-indigo-600 mb-6">
-                    Fill up this form
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 pt-36">
+            <div className="max-w-lg w-full bg-white rounded-3xl shadow-2xl p-8">
+                <h1 className="text-2xl font-extrabold text-center text-indigo-600 mb-8">
+                    Start a New Conversation
                 </h1>
-                <form onSubmit={handleEnterNewConversation}>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
-                        Language to practise
-                    </label>
-                    <select
-                        className="w-full p-2 border border-gray-300 rounded-lg"
-                        value={practiseLanguageId}
-                        onChange={(event) => setPractiseLanguageId(event.target.value)}
-                    >
-                        {availableLanguages &&
-                         Object.keys(availableLanguages).length > 0 &&
-                         Object.entries(availableLanguages).map(([name, id]) => (
-                            <option key={id} value={id}>
-                            {name}
-                            </option>
-                        ))}
-                    </select>
-                     <label className="block mb-2 text-sm font-medium text-gray-700">
-                        Native Language
-                    </label>
-                    <select
-                        className="w-full p-2 border border-gray-300 rounded-lg"
-                        value={nativeLanguageId}
-                        onChange={(event) => setNativeLanguageId(event.target.value)}
-                    >
-                        {availableLanguages &&
-                         Object.keys(availableLanguages).length > 0 &&
-                         Object.entries(availableLanguages).map(([name, id]) => (
-                            <option key={id} value={id}>
-                            {name}
-                            </option>
-                        ))}
-                    </select>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
-                        Category
-                    </label>
-                    <select
-                        className="w-full p-2 border border-gray-300 rounded-lg"
-                        value={selectedTopicCategoryId}
-                        onChange={(event) => handleChangeTopicCategory(event)}
-                    >
-                        {!loadingTopicCategories &&
-                            topicCategoriesWithTopics.map((cat) => (
-                                <option key={cat.id} value={cat.id}>
-                                    {cat.title}
+                <form onSubmit={handleEnterNewConversation} className="space-y-5">
+                    
+                    {formError && (
+                        <div className="text-red-600 bg-red-100 p-3 rounded-lg border border-red-300">
+                            {formError}
+                        </div>
+                    )}
+
+                    {/* Language to Practise */}
+                    <div className="flex flex-col">
+                        <label className="mb-2 text-sm font-semibold text-gray-700">
+                            Language to Practise
+                        </label>
+                        {(!availableLanguages || Object.keys(availableLanguages).length === 0) ? (
+                            <div className="h-12 bg-purple-200 rounded-xl animate-pulse"></div>
+                        ) : (
+                            <select
+                                className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                value={practiseLanguageId}
+                                onChange={(event) => setPractiseLanguageId(event.target.value)}
+                            >
+                                {Object.entries(availableLanguages).map(([name, id]) => (
+                                    <option key={id} value={id}>
+                                        {name}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+                    </div>
+
+                    {/* Native Language */}
+                    <div className="flex flex-col">
+                        <label className="mb-2 text-sm font-semibold text-gray-700">
+                            Native Language
+                        </label>
+                        {(!availableLanguages || Object.keys(availableLanguages).length === 0) ? (
+                            <div className="h-12 bg-purple-200 rounded-xl animate-pulse"></div>
+                        ) : (
+                            <select
+                                className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                value={nativeLanguageId}
+                                onChange={(event) => setNativeLanguageId(event.target.value)}
+                            >
+                                {Object.entries(availableLanguages).map(([name, id]) => (
+                                    <option key={id} value={id}>
+                                        {name}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+                    </div>
+
+                    {/* Category */}
+                    <div className="flex flex-col">
+                        <label className="mb-2 text-sm font-semibold text-gray-700">
+                            Category
+                        </label>
+                        {loadingTopicCategories ? (
+                            <div className="h-12 bg-purple-200 rounded-xl animate-pulse"></div>
+                        ) : (
+                            <select
+                                className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                value={selectedTopicCategoryId}
+                                onChange={handleChangeTopicCategory}
+                            >
+                                {topicCategoriesWithTopics.map((cat) => (
+                                    <option key={cat.id} value={cat.id}>
+                                        {cat.title}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+                    </div>
+
+                    {/* Topic */}
+                    <div className="flex flex-col">
+                        <label className="mb-2 text-sm font-semibold text-gray-700">
+                            Topic
+                        </label>
+                        {loadingTopicCategories ? (
+                            <div className="h-12 bg-purple-200 rounded-xl animate-pulse"></div>
+                        ) : (
+                            <select
+                                className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                value={selectedTopicId}
+                                onChange={(e) => setSelectedTopicId(e.target.value)}
+                            >
+                                {topics.map((topic) => (
+                                    <option key={topic.id} value={topic.id}>
+                                        {topic.title}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+                    </div>
+                    
+                    {/* Level */}
+                    <div className="flex flex-col">
+                        <label className="mb-2 text-sm font-semibold text-gray-700">
+                            Your Level
+                        </label>
+                        <select
+                            className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            value={level}
+                            onChange={(e) => setLevel(e.target.value)}
+                        >
+                            {levels.map((levelOption) => (
+                                <option key={levelOption.value} value={levelOption.value}>
+                                    {levelOption.label}
                                 </option>
                             ))}
-                    </select>
+                        </select>
+                    </div>
 
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
-                        Topic
-                    </label>
-                    <select
-                        className="w-full p-2 border border-gray-300 rounded-lg"
-                        value={selectedTopicId}
-                        onChange={(e) => setSelectedTopicId(e.target.value)}
+                    <Button
+                        type="submit"
+                        size="lg"
+                        className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md transition-all duration-200"
                     >
-                        {!loadingTopicCategories &&
-                            topics.map((topic) => (
-                                <option key={topic.id} value={topic.id}>
-                                    {topic.title}
-                                </option>
-                            ))}
-                    </select>
-
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
-                        Your Level
-                    </label>
-                    <select
-                        className="w-full p-2 border border-gray-300 rounded-lg"
-                        value={level}
-                        onChange={(e) => setLevel(e.target.value)}
-                    >
-                        {levels.map((levelOption) => (
-                            <option key={levelOption.value} value={levelOption.value}>
-                                {levelOption.label}
-                            </option>
-                        ))}
-                    </select>
-
-                    <Button type="submit" size="lg">
-                        Enter the conversation
+                        Enter the Conversation
                     </Button>
                 </form>
             </div>
