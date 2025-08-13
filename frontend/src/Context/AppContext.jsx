@@ -8,6 +8,7 @@ export default function AppProvider({children}) {
     const [user, setUser] = useState(null)
     const [laravelBaseUrl, setLaravelBaseUrl] = useState('')
     const [fastApiBaseUrl, setFastApiBaseUrl] = useState('')
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if(laravelBaseUrl == '' && fastApiBaseUrl == '') {
@@ -15,8 +16,9 @@ export default function AppProvider({children}) {
         }
 
         if(token) {
-            getUser();
+            return getUser();
         }
+        setLoading(false);
     }, [token])
 
     async function getUser() {
@@ -33,7 +35,9 @@ export default function AppProvider({children}) {
         const data = await res.json();
         
         if(res.ok) {
-            setUser(data.user)
+            setUser(data.user);
+            setLoading(false);
+            return;
         }
     }
 
@@ -49,7 +53,7 @@ export default function AppProvider({children}) {
     }
 
     return(
-        <AppContext.Provider value={{token, setToken, user, setUser, laravelBaseUrl, fastApiBaseUrl}}>
+        <AppContext.Provider value={{token, setToken, user, setUser, laravelBaseUrl, fastApiBaseUrl, loading}}>
             {children}
         </AppContext.Provider>
     )

@@ -9,10 +9,16 @@ import { useContext } from "react";
 import { AppContext } from "./Context/AppContext";
 import EnterConversation from "./Pages/Conversation/EnterConversation";
 import NewConversationForm from "./Pages/Conversation/NewConversationForm";
+import LoadingPage from "./Pages/LoadingPage";
 
 export default function App() {
 
-    const {user} = useContext(AppContext);
+    const {user, loading} = useContext(AppContext);
+
+    if (loading) {
+        // Optional: show spinner
+        return <LoadingPage />;
+    }
 
     return (
         <BrowserRouter>
