@@ -10,6 +10,7 @@ export default function EnterConversation() {
   const navigate = useNavigate();
 
   const [latestConversationId, setLatestConversationId] = useState(null);
+  const [latestConversationFetced, setLatestConversationFetced] = useState(false);
 
   useEffect(() => {
       fetchLatestConversation();
@@ -31,6 +32,7 @@ export default function EnterConversation() {
       });
       const data = await res.json();
       setLatestConversationId(data.conversationId);      
+      setLatestConversationFetced(true)
     } catch (err) {
       console.log(err.message);
     }
@@ -56,16 +58,23 @@ export default function EnterConversation() {
         </p>
       </div>
       <div className="w-full max-w-md flex flex-col gap-4">
-        {latestConversationId && (
-          <Button
-            variant="secondary"
-            size="lg"
-            className="w-full flex items-center justify-center gap-2 text-[#7E69AB] bg-white border border-[#9b87f5] hover:bg-[#f1f0fb] font-semibold shadow rounded-full transition"
-            onClick={() => goToLatestConversation()}
-          >
-            <ArrowRight className="w-5 h-5" />
-            Resume a previous conversation
-          </Button>
+        {! latestConversationFetced ? 
+            (
+              <div className="h-10 bg-purple-400 rounded-full animate-pulse flex items-center justify-center text-white font-medium">
+                Loading previous conversation...
+              </div>
+            ) : 
+            (
+              latestConversationId &&
+              <Button
+                variant="secondary"
+                size="lg"
+                className="w-full flex items-center justify-center gap-2 text-[#7E69AB] bg-white border border-[#9b87f5] hover:bg-[#f1f0fb] font-semibold shadow rounded-full transition-all hover:scale-105 shadow"
+                onClick={() => goToLatestConversation()}
+              >
+                <ArrowRight className="w-5 h-5" />
+                Resume a previous conversation
+              </Button>
         )}
         {/* <form onSubmit={() => navigate('/new-conversation-form')}> */}
         <form onSubmit={handleEnterNewConversation}>
