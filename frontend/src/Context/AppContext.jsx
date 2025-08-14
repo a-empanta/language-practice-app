@@ -16,29 +16,38 @@ export default function AppProvider({children}) {
         }
 
         if(token) {
-            return getUser();
+            getUser();
+        } else {
+            setLoading(false);
         }
-        setLoading(false);
     }, [token])
 
     async function getUser() {
         let laravelUrl = import.meta.env.VITE_APP_URL;
 
-        const res = await fetch(`${laravelUrl}/api/user`, {
-            headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`,
-            },
-          });
+        try {
+            const res = await fetch(`${laravelUrl}/api/user`, {
+                headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+                },
+            });
+            if(res.status >= 400 && res.status < 500) {
+                setLoading(false);
+                throw '';
+            }
 
-        const data = await res.json();
-        
-        if(res.ok) {
-            setUser(data.user);
-            setLoading(false);
-            return;
-        }
+            const data = await res.json();
+            
+            if(res.ok) {
+                setUser(data.user);
+                setLoading(false);
+                return;
+            }
+        } catch (error) {
+            // silent error
+        }        
     }
 
     function setBackendBaseUrls()

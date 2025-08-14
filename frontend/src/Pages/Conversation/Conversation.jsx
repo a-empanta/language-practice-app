@@ -33,10 +33,11 @@ const Conversation = () => {
   const [error, setError] = useState(null);
   const [showSubtitles, setShowSubtitles] = useState(true);
   const [loadingResponse, setLoadingResponse] = useState(null);
+  const [waitingTranscript, setWaitingTranscript] = useState(false);
+  const [waitingTranscriptPhrase, setWaitingTranscriptPhrase ] = useState('');
 
   // Refs
   const micListening = useRef(false);
-  const  voicesInitialized = useRef(0);
  
   // Fetch the conversation history
   useEffect(() => {
@@ -60,7 +61,9 @@ const Conversation = () => {
   useEffect(() => {
     if (conversation !== null) {
       setLoadingConversation(false);
+      setWaitingTranscriptPhrase(conversation.native_language.phrases.waiting_transcript);
     }
+    console.log(conversation)
   }, [conversation]);
 
   async function sendBlob(blobUrl) {
@@ -69,10 +72,11 @@ const Conversation = () => {
     const file = new File([blob], 'recording.wav', { type: 'audio/wav' });
     const modelName = conversation.practising_language.transcriber_ai_model;
     const formData = new FormData();
-
+    
     formData.append('file', file);
     formData.append('model_name', modelName);
 
+    setWaitingTranscript(true);
     const transcriptionResponse = await axios.post( `${fastApiBaseUrl}/voice/transcribe`, 
                                                     formData, 
                                                     { headers: {
@@ -80,7 +84,8 @@ const Conversation = () => {
                                                       'Content-Type'  : 'multipart/form-data' 
                                                       } 
                                                     });
-
+    setWaitingTranscript(false);
+    
     setUserTranscript(transcriptionResponse.data.transcript);
   }
 
@@ -138,8 +143,20 @@ const Conversation = () => {
     } else {
       micListening.current = false;
       stopRecording();
+      setWaitingTranscript(true);
+      setUserTranscript('');
     }
-  };     
+  };
+  
+  const handleTextAreaContent = () => {
+    if (userTranscript.trim() !== '') {
+      return userTranscript;
+    }
+    if (waitingTranscript) {
+      return waitingTranscriptPhrase;
+    }
+    return '';
+  }
   
   return (
     ( loadingConversation ? 
@@ -234,7 +251,7 @@ const Conversation = () => {
 
                     <div className="flex flex-col gap-2 mt-2 w-full">
                       
-                      <Textarea value={userTranscript} 
+                      <Textarea value={handleTextAreaContent()} disabled={waitingTranscript}
                                 onChange={(e) => setUserTranscript(e.target.value)} id="transcriptTextArea"/>
                       <Button className={
                                 cn(
@@ -242,7 +259,7 @@ const Conversation = () => {
                                 )
                               }
                               onClick={handleSendPrompt}
-                              disabled={userTranscript === ''}>
+                              disabled={userTranscript === '' || waitingTranscript === true}>
                         Send Message
                       </Button>
                     </div>

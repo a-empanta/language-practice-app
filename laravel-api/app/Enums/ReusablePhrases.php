@@ -31,6 +31,7 @@ enum ReusablePhrases: string
                 'inappropriate' => 'I am sorry, but I cannot help you with this',
                 'missunderstanding' => 'I am sorry, but I didn\'t understand what you mean',
                 'topic_change' => 'Let\'s focus on the current topic to practice better.',
+                'waiting_transcript' => 'Please wait for your transcript…',
                 default => $phrase,
             },
             self::CHINESE_MANDARIN => match($phrase) {
@@ -38,6 +39,7 @@ enum ReusablePhrases: string
                 'inappropriate' => '抱歉，我无法就此为您提供帮助',
                 'missunderstanding' => '抱歉，我不明白您的意思',
                 'topic_change' => '让我们专注于当前话题以更好地练习。',
+                'waiting_transcript' => '请等待您的转录…',
                 default => $phrase,
             },
             self::RUSSIAN => match($phrase) {
@@ -45,6 +47,7 @@ enum ReusablePhrases: string
                 'inappropriate' => 'Извините, но я не могу вам с этим помочь',
                 'missunderstanding' => 'Извините, но я не понял, что вы имели в виду',
                 'topic_change' => 'Давайте сосредоточимся на текущей теме для лучшей практики.',
+                'waiting_transcript' => 'Пожалуйста, подождите вашу транскрипцию…',
                 default => $phrase,
             },
             self::FRENCH => match($phrase) {
@@ -52,6 +55,7 @@ enum ReusablePhrases: string
                 'inappropriate' => 'Je suis désolé, mais je ne peux pas vous aider pour cela',
                 'missunderstanding' => 'Je suis désolé, mais je n\'ai pas compris ce que vous voulez dire',
                 'topic_change' => 'Concentrons-nous sur le sujet actuel pour mieux pratiquer.',
+                'waiting_transcript' => 'Veuillez patienter pour votre transcription…',
                 default => $phrase,
             },
             self::GERMAN => match($phrase) {
@@ -59,6 +63,7 @@ enum ReusablePhrases: string
                 'inappropriate' => 'Es tut mir leid, aber ich kann Ihnen dabei nicht helfen',
                 'missunderstanding' => 'Es tut mir leid, aber ich habe nicht verstanden, was Sie meinen',
                 'topic_change' => 'Lass uns beim aktuellen Thema bleiben, um besser zu üben.',
+                'waiting_transcript' => 'Bitte warten Sie auf Ihre Transkription…',
                 default => $phrase,
             },
             self::SPANISH => match($phrase) {
@@ -66,6 +71,7 @@ enum ReusablePhrases: string
                 'inappropriate' => 'Lo siento, pero no puedo ayudarle con esto',
                 'missunderstanding' => 'Lo siento, pero no entendí lo que quiso decir',
                 'topic_change' => 'Centrémonos en el tema actual para practicar mejor.',
+                'waiting_transcript' => 'Por favor, espere su transcripción…',
                 default => $phrase,
             },
             self::PORTUGUESE => match($phrase) {
@@ -73,6 +79,7 @@ enum ReusablePhrases: string
                 'inappropriate' => 'Desculpe, mas não posso ajudá-lo com isso',
                 'missunderstanding' => 'Desculpe, mas não entendi o que você quis dizer',
                 'topic_change' => 'Vamos focar no tema atual para praticar melhor.',
+                'waiting_transcript' => 'Por favor, aguarde sua transcrição…',
                 default => $phrase,
             },
             self::TURKISH => match($phrase) {
@@ -80,6 +87,7 @@ enum ReusablePhrases: string
                 'inappropriate' => 'Üzgünüm, ama bu konuda size yardımcı olamam',
                 'missunderstanding' => 'Üzgünüm, ne demek istediğinizi anlayamadım',
                 'topic_change' => 'Daha iyi pratik yapmak için mevcut konuya odaklanalım.',
+                'waiting_transcript' => 'Lütfen transkriptiniz için bekleyin…',
                 default => $phrase,
             },
             self::ITALIAN => match($phrase) {
@@ -87,6 +95,7 @@ enum ReusablePhrases: string
                 'inappropriate' => 'Mi dispiace, ma non posso aiutarla con questo',
                 'missunderstanding' => 'Mi dispiace, ma non ho capito cosa intendeva',
                 'topic_change' => 'Concentriamoci sull’argomento attuale per praticare meglio.',
+                'waiting_transcript' => '	Attendere per favore la tua trascrizione…',
                 default => $phrase,
             },
             self::DUTCH => match($phrase) {
@@ -94,6 +103,7 @@ enum ReusablePhrases: string
                 'inappropriate' => 'Het spijt me, maar ik kan u hiermee niet helpen',
                 'missunderstanding' => 'Het spijt me, maar ik begreep niet wat u bedoelt',
                 'topic_change' => 'Laten we ons op het huidige onderwerp concentreren om beter te oefenen.',
+                'waiting_transcript' => '	Wacht alstublieft op uw transcriptie…',
                 default => $phrase,
             },
             self::CATALAN => match($phrase) {
@@ -101,6 +111,7 @@ enum ReusablePhrases: string
                 'inappropriate' => 'Em sap greu, però no puc ajudar-lo amb això',
                 'missunderstanding' => 'Em sap greu, però no he entès què volia dir',
                 'topic_change' => 'Centrem-nos en el tema actual per practicar millor.',
+                'waiting_transcript' => 'Si us plau, esperi la seva transcripció…',
                 default => $phrase,
             },
             self::ARABIC => match($phrase) {
@@ -108,6 +119,7 @@ enum ReusablePhrases: string
                 'inappropriate' => 'عذراً، لكن لا أستطيع مساعدتك في هذا',
                 'missunderstanding' => 'عذراً، لم أفهم ما تعنيه',
                 'topic_change' => 'دعنا نركز على الموضوع الحالي لنمارس بشكل أفضل.',
+                'waiting_transcript' => 'يرجى الانتظار للحصول على نسختك…',
                 default => $phrase,
             },
             self::SWEDISH => match($phrase) {
@@ -115,6 +127,7 @@ enum ReusablePhrases: string
                 'inappropriate' => 'Tyvärr, men jag kan inte hjälpa dig med detta',
                 'missunderstanding' => 'Tyvärr, men jag förstod inte vad du menade',
                 'topic_change' => 'Låt oss fokusera på det aktuella ämnet för att öva bättre.',
+                'waiting_transcript' => 'Vänta på din transkription, tack…',
                 default => $phrase,
             },
             self::JAPANESE => match($phrase) {
@@ -122,6 +135,7 @@ enum ReusablePhrases: string
                 'inappropriate' => '申し訳ありませんが、これについてはお手伝いできません',
                 'missunderstanding' => '申し訳ありませんが、おっしゃっていることが分かりませんでした',
                 'topic_change' => 'より良く練習するために現在の話題に集中しましょう。',
+                'waiting_transcript' => 'トランスクリプトをお待ちください…',
                 default => $phrase,
             },
             self::HINDI => match($phrase) {
@@ -129,6 +143,7 @@ enum ReusablePhrases: string
                 'inappropriate' => 'माफ़ कीजिए, लेकिन मैं इसमें आपकी मदद नहीं कर सकता',
                 'missunderstanding' => 'माफ़ कीजिए, लेकिन मैं समझ नहीं पाया कि आपका क्या मतलब है',
                 'topic_change' => 'बेहतर अभ्यास के लिए वर्तमान विषय पर ध्यान केंद्रित करें।',
+                'waiting_transcript' => 'कृपया अपनी ट्रांसक्रिप्ट के लिए प्रतीक्षा करें…',
                 default => $phrase,
             },
             self::CZECH => match($phrase) {
@@ -136,6 +151,7 @@ enum ReusablePhrases: string
                 'inappropriate' => 'Omlouvám se, ale s tímto vám nemohu pomoci',
                 'missunderstanding' => 'Omlouvám se, ale nerozuměl jsem tomu, co jste myslel',
                 'topic_change' => 'Soustřeďme se na aktuální téma, abychom lépe procvičovali.',
+                'waiting_transcript' => 'Počkejte prosím na svůj přepis…',
                 default => $phrase,
             },
             self::POLISH => match($phrase) {
@@ -143,6 +159,7 @@ enum ReusablePhrases: string
                 'inappropriate' => 'Przykro mi, ale nie mogę Panu/Pani w tym pomóc',
                 'missunderstanding' => 'Przykro mi, ale nie zrozumiałem, co miał Pan/Pani na myśli',
                 'topic_change' => 'Skupmy się na bieżącym temacie, aby lepiej ćwiczyć.',
+                'waiting_transcript' => 'Proszę poczekać na transkrypcję…',
                 default => $phrase,
             },
             self::KOREAN => match($phrase) {
@@ -150,6 +167,7 @@ enum ReusablePhrases: string
                 'inappropriate' => '죄송하지만, 이 문제에 대해서는 도와드릴 수 없습니다',
                 'missunderstanding' => '죄송하지만, 무슨 뜻인지 이해하지 못했습니다',
                 'topic_change' => '더 잘 연습하기 위해 현재 주제에 집중합시다.',
+                'waiting_transcript' => '전사본을 기다려 주세요…',
                 default => $phrase,
             },
         };
@@ -158,10 +176,11 @@ enum ReusablePhrases: string
     public function allTranslations(): string
     {
         return json_encode([
-            'mistake' => $this->translate('mistake'),
-            'inappropriate' => $this->translate('inappropriate'),
+            'mistake'           => $this->translate('mistake'),
+            'inappropriate'     => $this->translate('inappropriate'),
             'missunderstanding' => $this->translate('missunderstanding'),
-            'topic_change' => $this->translate('topic_change'),
+            'topic_change'      => $this->translate('topic_change'),
+            'waiting_transcript'=> $this->translate('waiting_transcript'),
         ], JSON_UNESCAPED_UNICODE);
     }
 }
