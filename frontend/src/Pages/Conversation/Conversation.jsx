@@ -26,6 +26,7 @@ const Conversation = () => {
 
   // State
   const [userTranscript, setUserTranscript] = useState('');
+  const [translation, setTranslation] = useState('');
   const [respondingText, setRespondingText] = useState('');
   const [replyAudioUri, setReplyAudioUri] = useState('');
   const [conversation, setConversation] = useState(null);
@@ -110,7 +111,7 @@ const Conversation = () => {
   
       // show the text on screen
       setRespondingText(response);
-      // setTranslation(translation);
+      setTranslation(translation);
       
       // fire up an <audio> player
       if (replyAudioUri) {
@@ -284,6 +285,16 @@ const Conversation = () => {
                       </div>
                     </div>
                     <div className="flex-1 bg-white/90 border border-purple-100 rounded-md px-4 py-2 text-purple-500 text-base min-h-[36px] shadow-sm">
+                     { respondingText.trim() !== '' ?
+                     (<div>
+                        <p>
+                          <strong>{conversation.practising_language.name}</strong>: {respondingText}
+                        </p>
+                        <p>
+                          <strong>{conversation.native_language.name}</strong>: {translation}
+                        </p>
+                     </div>) : '' 
+                     }
                     </div>
                   </div>)
                   : 
