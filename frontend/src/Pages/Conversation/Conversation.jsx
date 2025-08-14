@@ -231,7 +231,7 @@ const Conversation = () => {
                         (<div>
                             <Button
                               className={cn(
-                                "bg-gradient-to-tr from-purple-400 to-purple-700 hover:from-purple-500 hover:to-purple-900 transition text-white font-bold rounded-full px-5 py-5 shadow-lg flex items-center gap-2 text-lg tracking-wide",
+                                "bg-gradient-to-tr from-purple-400 to-purple-700 hover:from-purple-500 hover:to-purple-900 transition text-white font-bold rounded-full px-4 py-5 shadow-lg flex items-center gap-2 text-lg tracking-wide",
                               )} 
                               onClick={handleListenAiResponse}>
                               <Headphones />

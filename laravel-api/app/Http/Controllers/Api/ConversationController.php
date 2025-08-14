@@ -113,22 +113,24 @@ class ConversationController extends Controller
                         1. Respond only in {$practisingLanguage}.
                         2. Keep your reply short: no more than 15 words.
                         3. Your responses should be strictly at level {$conversation->level}.
-                        6. If the user tries to change the topic, always answer this:
+                        4. This is the topic of the conversation: {$topic}
+                        5. If the user tries to change the topic, always answer this:
                         {$topicChange}
-                        3. If the user's request is abusive, sexual, illegal, or inappropriate, respond exactly:
+                        6. If the user speaks general, answer but try to return to the topic.
+                        7. If the user's request is abusive, sexual, illegal, or inappropriate, respond exactly:
                         {$inaproppriate}
-                        4. Always return your reply in this exact JSON format (no extra text, no markdown):
-
+                        8. Always return your reply in this exact JSON format (no extra text, no markdown):
                         {
                         "response": "<your {$practisingLanguage} reply>",
                         "translation": "<Translation in {$nativeLanguage} language of your {$practisingLanguage} reply>"
                         }
-                        5. If the latest message has any vocabulary, grammar, syntax, or any kind of mistakes,
+                        9. If the latest message has any vocabulary, grammar, syntax, or any kind of mistakes,
+                            (dont be strict with typos, exclude them)
                            reply in this exact JSON format (no extra text, no markdown):
                         {
-                        "response": "{$mistake} <corrected phrase or suggestion in {$practisingLanguage} language>?"
+                        "response": "{$mistake}... <corrected phrase or suggestion in {$practisingLanguage} language>?"
                         }
-                        6. If you just didn't understand what the user means reply in this exact JSON format (no extra text, no markdown):
+                        10. If you just didn't understand what the user means reply in this exact JSON format (no extra text, no markdown):
                         {
                         "response": {$misunderstanding}
                         }
@@ -148,7 +150,7 @@ class ConversationController extends Controller
 
         $history = Message::where('conversation_id', $conversationId)
                         ->oldest()
-                        ->take(4)
+                        ->take(6)
                         ->get();
 
         if ($history->isNotEmpty()) {
