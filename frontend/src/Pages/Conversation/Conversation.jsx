@@ -49,6 +49,7 @@ const Conversation = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        
         setConversation(res.data);
       } catch (err) {
         setError("Not authorized or conversation not found");
@@ -64,7 +65,6 @@ const Conversation = () => {
       setLoadingConversation(false);
       setWaitingTranscriptPhrase(conversation.native_language.phrases.waiting_transcript);
     }
-    console.log(conversation)
   }, [conversation]);
 
   async function sendBlob(blobUrl) {
@@ -93,7 +93,8 @@ const Conversation = () => {
   const handleSendPrompt = async () => {
     micListening.current = false;
     setLoadingResponse(true);
-  
+    setError('');
+
     try {
       const { data } = await axios.post(
         `${laravelBaseUrl}/api/prompt/${id}`,
@@ -176,7 +177,7 @@ const Conversation = () => {
             <div className="flex-1 flex flex-col items-center justify-center relative">
               <div className="w-[340px] h-[340px] sm:w-[410px] sm:h-[410px] md:w-[500px] md:h-[500px] rounded-full bg-white/20 shadow-2xl overflow-hidden flex items-center justify-center border-4 border-purple-200 mx-auto ring-8 ring-purple-100 animate-fade-in">
                 <img
-                  src={AI_WOMAN_IMAGE}
+                  src={conversation.avatar}
                   alt="AI Woman"
                   className="object-cover w-full h-full rounded-full"
                   draggable={false}
@@ -215,6 +216,7 @@ const Conversation = () => {
                         className={cn(
                           "bg-gradient-to-tr from-purple-400 to-purple-700 hover:from-purple-500 hover:to-purple-900 transition text-white font-bold rounded-full px-8 py-4 shadow-lg flex items-center gap-2 text-lg tracking-wide",
                         )}
+                        disabled={waitingTranscript}
                         onClick={handleMic}
                       >
                         {micListening.current ? (

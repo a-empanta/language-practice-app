@@ -22,9 +22,9 @@ class ConversationController extends Controller
             'prompt' => 'required|string',
         ]);
         $conversation = Conversation::find($id);
-        $nativeLanguage = Language::find($conversation->native_language_id)->name;
-        $practisingLanguage = Language::find($conversation->practising_language_id)->name;
-        $messages = $this->buildMessages($id, $data['prompt'], $practisingLanguage, $nativeLanguage);
+        $nativeLanguage = Language::find($conversation->native_language_id);
+        $practisingLanguage = Language::find($conversation->practising_language_id);
+        $messages = $this->buildMessages($conversation, $data['prompt'], $practisingLanguage, $nativeLanguage);
 
         $body = [
                  'model'    => env('AI_MODEL'),
@@ -35,16 +35,16 @@ class ConversationController extends Controller
                         ->withToken(env('GROQ_API_KEY'))
                         ->post("https://api.groq.com/openai/v1/chat/completions", $body);
 
-        $parsed           = $this->formatAiResponse($response, $nativeLanguage);
-        $replyDutch       = $parsed['response'];
+        $parsed           = $this->formatAiResponse($response);
+        $reply       = $parsed['response'];
         $replyTranslation = isset($parsed['translation']) ? $parsed['translation'] : null;
-        $replyAudioUri  = $this->synthesizeSpeech($replyDutch);
+        $replyAudioUri  = $this->synthesizeSpeech($reply, $practisingLanguage);
 
-        $this->saveConversation($data['prompt'], $replyDutch, $id);
+        $this->saveConversation($data['prompt'], $reply, $id);
 
         return response()->json([
             'message'     => 'Data received successfully!',
-            'response'    => $replyDutch,
+            'response'    => $reply,
             'translation' => $replyTranslation,
             'replyAudioUri' => $replyAudioUri,
         ]);
@@ -54,7 +54,6 @@ class ConversationController extends Controller
     {
         $latest = auth()->user()->conversations()->latest()->first();
         
-
         return response()->json([
             'conversationId' => $latest ? $latest->id : null,
         ]);
@@ -90,22 +89,26 @@ class ConversationController extends Controller
         $conversation = auth()->user()->conversations()
                         ->with(['nativeLanguage', 'practisingLanguage', 'topic'])
                         ->findOrFail($id);
+        $gender = $conversation->practisingLanguage->speech_generator_gender;
+        $filename = $gender == 'Female' ? "avatars/lady_avatar.webp" : "avatars/man_avatar.webp";
+        $conversation->avatar = Storage::disk('s3')->temporaryUrl(
+            $filename,
+            now()->addMinutes(5)
+        );
 
         return response()->json($conversation);
     }
 
-    private function buildMessages(int $conversationId, string $userPrompt, string $practisingLanguage, string $nativeLanguage): array
+    private function buildMessages(Conversation $conversation, string $userPrompt, Language $practisingLanguageRecord, Language $nativeLanguageRecord): array
     {
-        $conversation = Conversation::find($conversationId);
+        $latestMessage = Message::where('conversation_id', $conversation->id)->latest()->first();
         $topic = $conversation->topic->title;
-        $latestMessage = Message::where('conversation_id', $conversationId)
-                                ->latest()
-                                ->first();
-        $practisingLanguageRecord = Language::where('name', $practisingLanguage)->first();
         $inaproppriate = $practisingLanguageRecord->phrases['inappropriate'];
         $mistake = $practisingLanguageRecord->phrases['mistake'];
         $misunderstanding = $practisingLanguageRecord->phrases['missunderstanding'];
         $topicChange = $practisingLanguageRecord->phrases['topic_change'];
+        $practisingLanguage = $practisingLanguageRecord->name;
+        $nativeLanguage = $nativeLanguageRecord->name;
 
         $system = <<<EOT
                         You are a friendly {$practisingLanguage}-language tutor bot.
@@ -124,8 +127,9 @@ class ConversationController extends Controller
                         "response": "<your {$practisingLanguage} reply>",
                         "translation": "<Translation in {$nativeLanguage} language of your {$practisingLanguage} reply>"
                         }
-                        9. If the latest message has any vocabulary, grammar, syntax, or any kind of mistakes,
-                            (dont be strict with typos, exclude them)
+                        9. If the latest message contains any grammar or syntax mistakes, point them out and provide 
+                          corrections. Ignore typos, misspellings, punctuation errors or even missing questionmarks
+                          (you can understand if it is question or not).
                            reply in this exact JSON format (no extra text, no markdown):
                         {
                         "response": "{$mistake}... <corrected phrase or suggestion in {$practisingLanguage} language>?"
@@ -136,7 +140,7 @@ class ConversationController extends Controller
                         }
                     EOT;
 
-        $system .= $this->attachConversationHistory($conversationId);
+        $system .= $this->attachConversationHistory($conversation);
 
         return [
                 ['role'    => 'system',  'content' => trim($system)],
@@ -144,11 +148,10 @@ class ConversationController extends Controller
                ];
     }
 
-    private function attachConversationHistory(int $conversationId): string
+    private function attachConversationHistory(Conversation $conversation): string
     {
         $historyString = '';
-
-        $history = Message::where('conversation_id', $conversationId)
+        $history = Message::where('conversation_id', $conversation->id)
                         ->oldest()
                         ->take(6)
                         ->get();
@@ -165,7 +168,7 @@ class ConversationController extends Controller
         return $historyString;
     }
 
-    private function formatAiResponse(ApiResponse $response, string $nativeLanguage): array
+    private function formatAiResponse(ApiResponse $response): array
     {
         $default = [
             'response' => 'I am sorry, but I do not understand what you mean. Could you repeat that?'
@@ -196,7 +199,7 @@ class ConversationController extends Controller
         return $response;
     }
 
-    public function synthesizeSpeech(string $text): ?string
+    public function synthesizeSpeech(string $text, Language $practisingLanguage): ?string
     {
         $polly = new PollyClient([
             'region'      => config('services.aws.region'),
@@ -208,11 +211,11 @@ class ConversationController extends Controller
         ]);
 
         $result = $polly->synthesizeSpeech([
-            'Engine'       => 'neural',
+            'Engine'       => $practisingLanguage->speech_generator_engine,
             'Text'         => $text,
             'OutputFormat' => 'mp3',
-            'LanguageCode' => 'nl-NL',
-            'VoiceId'      => 'Laura',
+            'LanguageCode' => $practisingLanguage->speech_generator_language_code,
+            'VoiceId'      => $practisingLanguage->speech_generator_voice_id,
         ]);
 
         // Choose a filename (under a per-user folder if you like)
