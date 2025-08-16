@@ -14,7 +14,7 @@ fi
 
 # Remove storage-init directory
 rm -rf /var/www/storage-init
-mkdir /var/www/sqlite/database.sqlite
+sudo mkdir /var/www/sqlite/database.sqlite
 
 # Run Laravel migrations
 # -----------------------------------------------------------

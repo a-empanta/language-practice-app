@@ -6,8 +6,9 @@ README.md
 connect_ec2.sh
 docker/production/nginx/ssl
 compose.server.yaml
-remove-development-artifacts.sh
-remove-production-artifacts.sh
+destroy-development-artifacts.sh
+destroy-production-artifacts.sh
+destroy-artifacts-on-server.sh
 docker-build.sh
 development-down.sh
 docker-push.sh
