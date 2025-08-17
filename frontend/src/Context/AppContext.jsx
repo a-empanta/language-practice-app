@@ -11,7 +11,7 @@ export default function AppProvider({children}) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-            if(laravelBaseUrl == '' && fastApiBaseUrl == '') {
+        if(laravelBaseUrl == '' && fastApiBaseUrl == '') {
             setBackendBaseUrls();
         }
     }, [])

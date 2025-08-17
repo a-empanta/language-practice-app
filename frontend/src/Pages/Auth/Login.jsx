@@ -11,6 +11,8 @@ export default function Login() {
 
   async function handleLogin(e) {
     e.preventDefault();
+    console.log(laravelBaseUrl);
+    console.log(`${laravelBaseUrl}/api/login`)
     const res = await fetch(`${laravelBaseUrl}/api/login`, {
       method: "POST",
       headers: {
