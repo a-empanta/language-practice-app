@@ -17,11 +17,13 @@ export default function AppProvider({children}) {
     }, [])
 
     useEffect(() => {
-        if(token) {
-            getUser();
-        } else {
-            setLoading(false);
+        if( typeof token === undefined || 
+            typeof token === null ||
+            typeof token === false
+        ) {
+            return setLoading(false);
         }
+        getUser();
     }, [token])
 
     async function getUser() {
