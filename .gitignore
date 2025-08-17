@@ -13,3 +13,4 @@ docker-build.sh
 development-down.sh
 docker-push.sh
 tasks.txt
+scrap.txt

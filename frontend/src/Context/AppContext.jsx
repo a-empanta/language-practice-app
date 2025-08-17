@@ -54,13 +54,11 @@ export default function AppProvider({children}) {
 
     function setBackendBaseUrls()
     {
-        setLaravelBaseUrl(import.meta.env.VITE_APP_URL);
-
-        if(import.meta.env.VITE_APP_ENV == 'development') {
-             setFastApiBaseUrl(import.meta.env.VITE_APP_URL + ':8000');
-             return;
+        if (typeof import.meta.env.VITE_APP_URL === "undefined") {
+            return;
         }
-        setFastApiBaseUrl(import.meta.env.VITE_APP_URL);
+        setLaravelBaseUrl(import.meta.env.VITE_APP_URL);
+        setFastApiBaseUrl(import.meta.env.VITE_APP_URL + ':8000');
     }
 
     return(
