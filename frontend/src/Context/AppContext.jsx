@@ -10,13 +10,23 @@ export default function AppProvider({children}) {
     const [fastApiBaseUrl, setFastApiBaseUrl] = useState('')
     const [loading, setLoading] = useState(true);
 
+    // useEffect(() => {
+    //     if(laravelBaseUrl == '' && fastApiBaseUrl == '') {
+    //         setBackendBaseUrls();
+    //     }
+    //     if( typeof token === undefined || 
+    //         typeof token === null ||
+    //         typeof token === false
+    //     ) {
+    //         return setLoading(false);
+    //     }
+    //     getUser();
+    // }, [])
+
     useEffect(() => {
         if(laravelBaseUrl == '' && fastApiBaseUrl == '') {
             setBackendBaseUrls();
         }
-    }, [])
-
-    useEffect(() => {
         if( typeof token === undefined || 
             typeof token === null ||
             typeof token === false
@@ -24,6 +34,7 @@ export default function AppProvider({children}) {
             return setLoading(false);
         }
         getUser();
+        setLoading(false);
     }, [token])
 
     async function getUser() {
