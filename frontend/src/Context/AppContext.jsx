@@ -31,10 +31,12 @@ export default function AppProvider({children}) {
             typeof token === null ||
             typeof token === false
         ) {
-            return setLoading(false);
+            setLoading(false);
+        } else {
+            getUser();
+            setLoading(false);
         }
-        getUser();
-        setLoading(false);
+        
     }, [token])
 
     async function getUser() {
