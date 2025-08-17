@@ -18,6 +18,8 @@ def validate_user(authorization, url):
             f"{url}/api/validate-token",
             headers={"Authorization": f"Bearer {token}"}
         )
+        logger.error(f"{url}/api/validate-token")
+        logger.error(response)
         if response.status_code != 200:
             raise HTTPException(status_code=401, detail="Invalid token")
     except requests.RequestException:

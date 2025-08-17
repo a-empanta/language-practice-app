@@ -32,7 +32,8 @@ environment = os.getenv('APP_ENV')
 
 @app.post("/voice/transcribe")
 async def transcribe(file: UploadFile = File(...), model_name: str = Form(...) ,authorization: str = Header(None)):
-    url = "http://localhost"
+    logging.info(environment)
+    url = "http://nginx" if environment == "local" else os.getenv('APP_URL')
     validate_user(authorization, url)
     
     if not file.filename.endswith((".wav", ".webm", ".ogg", ".mp3")):
