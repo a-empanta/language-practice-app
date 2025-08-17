@@ -14,8 +14,7 @@ export default function AppProvider({children}) {
             if(laravelBaseUrl == '' && fastApiBaseUrl == '') {
             setBackendBaseUrls();
         }
-        }
-    )
+    }, [])
 
     useEffect(() => {
         if(token) {
