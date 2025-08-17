@@ -22,8 +22,12 @@ export default function AppProvider({children}) {
         }
     }, [token])
 
-    async function getUser() {
-        let laravelUrl = import.meta.env.VITE_APP_URL;
+    async function getUser() {        
+        let laravelUrl = '';
+        
+        if (typeof import.meta.env.VITE_APP_URL !== "undefined") {
+            laravelUrl = import.meta.env.VITE_APP_URL;
+        }
 
         try {
             const res = await fetch(`${laravelUrl}/api/user`, {
